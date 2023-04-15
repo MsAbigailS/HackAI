@@ -5,6 +5,8 @@
 	let media: any[] = [];
 	let mediaRecorder: any = null;
 	let url = 'http://10.169.162.154:5000'
+	let questions: string[] = [];
+
 	onMount(async () => {
 		const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
@@ -13,7 +15,6 @@
 		mediaRecorder.ondataavailable = (e: any) => media.push(e.data)
 
 		mediaRecorder.onstop = async function(){
-			// const audio = document.querySelector('audio');
 			const blob = new Blob(media, {
 				'type': 'audio/wav'
 				});
@@ -31,7 +32,6 @@
 				body: formData
 			});
 			const data = await response.text();
-			transcription = data;
 			// do a POST request to /getQuestions with the form body: transcript = transcript
 			const secondFormData = new FormData();
 			secondFormData.append('transcript', data);
@@ -39,11 +39,18 @@
 				method: 'POST',
 				body: secondFormData
 			});
-			const secondData = await secondResponse.text();
-			console.log(secondData);
-		}
+			const secondData = await secondResponse.json();
+			for(let i = 0; i < secondData.length; i++) {
+				const question = secondData[i];
+				console.log(question);
+				questions[i] = question;
+			}
+			transcription = secondData;
+		} // end of event listeners
 
-	});  
+
+
+	});  // end of onmount
 	async function startRecording(){ 
 		console.log('starting recording...')
 		media.length = 0;
@@ -55,6 +62,7 @@
 	}
 
 	let transcription: undefined | string = undefined;
+	let currentBet: undefined | string = 'Who will win the game between the Mavericks and the Miami Heat?';
 </script>
 
 <svelte:head>
@@ -69,10 +77,19 @@
 		</div>
 		<div class="row">
 			<div class="halfsection">
+				<h2>Next Bet</h2>
 				<div id="audio-controls">
-					{#if transcription}
-						<article>
-							{transcription}
+					{#if questions.length > 0}
+						<article id="question-cards">
+							{#each questions as question, index}
+								<!-- <button>{question}</button> -->
+								{#if index === 0}
+									<button class="question-button">{question}</button>
+									{:else}
+									<hr>
+									<button class="question-button">{question}</button>
+								{/if}
+							{/each}
 						</article>
 					{/if}
 					<div id="audio-controls-buttons">
@@ -81,7 +98,12 @@
 					</div>
 				</div>
 			</div>
-			<div class="halfsection">test</div>
+			<div class="halfsection">
+				<h2>Current Bet</h2>
+				<article id="current-bet-card">
+					<h5>{currentBet}</h5>
+				</article>
+			</div>
 		</div>
 	</div>
 	<div class="fullpage" id="past-bet-screen">
@@ -113,7 +135,7 @@
 	</div>
 </main>
 
-<style>
+<style lang='scss'>
 
 	button {
 		width: 10vw;
@@ -140,8 +162,9 @@
 		flex-direction: column;
 		align-items: center;
 		align-content: center;
-		width: 60%;
-		height: 50%;
+		width: 100%;
+		height: 80%;
+		padding: 0px;
 	}
 
 	#leaderboard-card {
@@ -229,6 +252,82 @@
 
 	#past-bet-screen {
 		background-color: aliceblue;
+	}
+
+	#homescreen {
+		background-color: rgb(255, 255, 255);
+	}
+
+	#current-bet-card {
+		width: 60%;
+		height: 60%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		align-content: center;
+	}
+
+	h2 {
+		margin-bottom: 0;
+	}
+
+	h3 {
+		text-align: center;
+	}
+
+	#question-cards {
+		width: 75%;
+		height: 80%;
+		display: flex;
+		flex-direction: column;
+		align-items: left;
+		align-content: center;
+		overflow-y: auto;
+		padding-top: 50px;
+		padding-bottom: 50px;
+		text-align: left;
+	}
+
+	hr {
+	width: 96%;               
+	}
+
+	.question-button {
+		all: revert;
+		// make the stylings for this button basically just text
+		width: 100%;
+		height: 50px;
+		margin: 0;
+		text-align: left;
+		display: flex;
+		flex-direction: column;
+		align-items: left;
+		justify-content: center;
+
+		// remove the border and background color
+		border: none;
+		background-color: inherit;
+		border-radius: 5px;
+		
+		// inherit all the text stylings
+		font-family: inherit;
+		font-size: inherit;
+		font-weight: inherit;
+		color: inherit;
+		text-decoration: inherit;
+		text-align: inherit;
+		transition: 0.5s;
+
+		// add a little padding
+		padding: 10px;
+
+		// shrink the text a little bit
+		transform: scale(0.95);
+		
+		// make the padding larger
+		&:hover {
+			transform: scale(1);
+		}
 	}
 
 </style>
