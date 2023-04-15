@@ -10,10 +10,12 @@ const router = useRouter();
 
 const homepage = () => router.push("home")
 const signuppage = () => router.push("signup")
+const betting = () => router.push("betting")
 
   return (
     <View style={styles.container}>
       <Text onPress={homepage}>click me</Text>
+      <Text onPress={betting}>click me - betting</Text>
     </View>
   );
 }
