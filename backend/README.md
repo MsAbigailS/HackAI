@@ -4,12 +4,12 @@ Since the backend is ridiculously convoluted at this point, I'll try to explain 
 ## Commands
 First start the backend with `flask run --host=0.0.0.0`.
 
-### Update 
-
 ### Getting Current Player Points
-GET
+POST
 `/getCurrentPoints`
-No Body
+Form Body
+player=player
+Will return amount of coins for player
 
 ### Getting Current Bet
 GET
@@ -20,7 +20,7 @@ Will return either:
 - The Current Bet
 
 ### Getting Past Bets
-GET
+POST
 `/getPastBets`
 Optional Form:
 number = number
@@ -33,7 +33,7 @@ Most recent bet will be at index 0
 POST
 `/setCurrentBet`
 Form Body:
-bet = bet
+bet = bet (text of bet)
 Will return 1 of 3 results:
 - "There is already a current bet"
 - "Success"
@@ -48,6 +48,20 @@ Will return 1 of 3 results:
 - "There is no current bet"
 - "Success"
 - "Winner was not side1 or side2"
+
+### Set Bet Choice
+POST
+`/setBetChoice`
+Form Body:
+choice=choice (yes or no)
+player=player
+amount=amount (numeric please)
+Will return 1 of 5 results:
+- "There is no current Bet"
+- "Not enough points for bet"
+- "Success"
+- "Not a valid choice for player"
+- "Missing Form Values"
 
 ### Making a Transcription
 POST
