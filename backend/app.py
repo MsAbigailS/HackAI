@@ -58,14 +58,14 @@ def getPastBets():
 def setCurrentBet():
     bet = request.form['bet']
     if currentBet is not None:
-        return "There is already a current Bet!"
+        return "There is already a current bet!"
     elif bet:
-        currentBet =  bet
+        "Success"
     else:
-        return "There was no bet"
+        return "Please attach the bet"
 
-@app.route("/moveCurrentBet", methods=["POST"])
-def moveCurrentBet(): 
+@app.route("/setCurrentBetWinner", methods=["POST"])
+def setCurrentBetWinner(): 
     winner = request.form['winner']
     if currentBet is None:
         return "There is no current Bet"
@@ -73,12 +73,14 @@ def moveCurrentBet():
         currentBet["winner"] = winner
         pastBets.insert(0, currentBet)
         currentBet = None
+        return "Success"
     else:
         return "Winner was not side1 or side2"
 
 @app.route('/transcription', methods=['POST'])
 def upload_file():
     file = request.files['file']
+    print(file.filename)
     if file:
         filename = file.filename
         file.save(filename)
