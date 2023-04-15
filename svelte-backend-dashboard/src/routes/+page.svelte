@@ -1,8 +1,10 @@
 <script lang='ts'>
 	import { onMount } from "svelte";
+	import toWav from 'audiobuffer-to-wav';
 
 	let media: any[] = [];
 	let mediaRecorder: any = null;
+	let url = 'http://10.169.162.154:5000'
 	onMount(async () => {
 		const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
@@ -10,21 +12,49 @@
 
 		mediaRecorder.ondataavailable = (e: any) => media.push(e.data)
 
-		mediaRecorder.onstop = function(){
-			const audio = document.querySelector('audio');
-
-			const blob = new Blob(media, {'type' : 'audio/wav; codecs=MS_PCM' });
-
-			media = []; 
-			if(audio) {
-				audio.src = window.URL.createObjectURL(blob);
-			}
+		mediaRecorder.onstop = async function(){
+			// const audio = document.querySelector('audio');
+			const blob = new Blob(media, {
+				'type': 'audio/wav'
+				});
+			media = []
+			let audio = window.URL.createObjectURL(blob);
+			const arrayBuffer = await blob.arrayBuffer();
+			const audioContext = new AudioContext();
+			const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+			const wavBuffer = toWav(audioBuffer);
+			const wavBlob = new Blob([wavBuffer], { type: 'audio/wav' });
+			const formData = new FormData();
+			formData.append('file', wavBlob, 'audio.wav');
+			const response = await fetch(`${url}/transcription`, {
+				method: 'POST',
+				body: formData
+			});
+			const data = await response.text();
+			transcription = data;
+			// do a POST request to /getQuestions with the form body: transcript = transcript
+			const secondFormData = new FormData();
+			secondFormData.append('transcript', data);
+			const secondResponse = await fetch(`${url}/getQuestions`, {
+				method: 'POST',
+				body: secondFormData
+			});
+			const secondData = await secondResponse.text();
+			console.log(secondData);
 		}
 
 	});  
-	function startRecording(){ mediaRecorder.start() }
-	function stopRecording() { mediaRecorder.stop() }
+	async function startRecording(){ 
+		console.log('starting recording...')
+		media.length = 0;
+		mediaRecorder.start()
+	}
+	async function stopRecording() { 
+		mediaRecorder.stop() 
+		console.log('stopping recording...')
+	}
 
+	let transcription: undefined | string = undefined;
 </script>
 
 <svelte:head>
@@ -37,9 +67,22 @@
 			<h1>Admin Dashboard</h1>
 			<h2>For all your administrative needs!</h2>
 		</div>
-		<audio controls />
-		<button on:click={startRecording}>Record</button>
-		<button on:click={stopRecording}>Stop</button>
+		<div class="row">
+			<div class="halfsection">
+				<div id="audio-controls">
+					{#if transcription}
+						<article>
+							{transcription}
+						</article>
+					{/if}
+					<div id="audio-controls-buttons">
+						<button on:click={startRecording}>Record</button>
+						<button on:click={stopRecording}>Stop</button>
+					</div>
+				</div>
+			</div>
+			<div class="halfsection">test</div>
+		</div>
 	</div>
 	<div class="fullpage" id="past-bet-screen">
 		<div class="row">
@@ -71,6 +114,35 @@
 </main>
 
 <style>
+
+	button {
+		width: 10vw;
+		height: 40px;
+		margin: 0;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+
+	#audio-controls-buttons {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+		width: 100%;
+		/* background-color: aliceblue; */
+		align-items: center;
+	}
+
+	#audio-controls {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		align-content: center;
+		width: 60%;
+		height: 50%;
+	}
 
 	#leaderboard-card {
 		width: 80%;
@@ -131,7 +203,7 @@
 		flex-direction: column;
 		align-items: center;
 		align-content: center;
-		background-color: aliceblue;
+		background-color: inherit;
 	}
 
 	.fullpage {
@@ -153,6 +225,10 @@
 		flex-direction: column;
 		align-items: center;
 		align-content: center;
+	}
+
+	#past-bet-screen {
+		background-color: aliceblue;
 	}
 
 </style>
