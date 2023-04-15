@@ -1,10 +1,11 @@
 <script lang='ts'>
 	import { onMount } from "svelte";
 	import toWav from 'audiobuffer-to-wav';
+	import { API_URL } from './secrets'
 
 	let media: any[] = [];
 	let mediaRecorder: any = null;
-	let url = 'http://10.169.162.154:5000'
+	let url = API_URL
 	let questions: string[] = [];
 
 	onMount(async () => {
@@ -27,10 +28,12 @@
 			const wavBlob = new Blob([wavBuffer], { type: 'audio/wav' });
 			const formData = new FormData();
 			formData.append('file', wavBlob, 'audio.wav');
+			console.log('sending request to: ' + `${url}/transcription`);
 			const response = await fetch(`${url}/transcription`, {
 				method: 'POST',
 				body: formData
 			});
+			console.log(response);
 			const data = await response.text();
 			// do a POST request to /getQuestions with the form body: transcript = transcript
 			const secondFormData = new FormData();
@@ -39,6 +42,7 @@
 				method: 'POST',
 				body: secondFormData
 			});
+			console.log(secondResponse);
 			const secondData = await secondResponse.json();
 			for(let i = 0; i < secondData.length; i++) {
 				const question = secondData[i];
@@ -61,8 +65,39 @@
 		console.log('stopping recording...')
 	}
 
+	async function questionClicked(event: { target: any }) {
+		// question id will be in the form "question_0"
+		// need to split to get the index
+		const questionId = event.target.id;
+		const questionIndex = questionId.split('_')[1];
+
+		// set the current bet to the question at the index
+		currentBet = questions[questionIndex];
+
+		//TODO: send a POST request
+
+		// POST /setCurrentBet Form Body: bet = bet (text of bet) Will return 1 of 3 results:
+		// "There is already a current bet"
+		// "Success"
+		// "Please attach a bet"
+
+		const formData = new FormData();
+		formData.append('bet', currentBet);
+		const response = await fetch(`${url}/setCurrentBet`, {
+			method: 'POST',
+			body: formData
+		});
+		const data = await response.text();
+		console.log(data);
+	}
+
+	async function cancelButtonClicked() {
+		// TODO: cancel current bet
+	}
+
 	let transcription: undefined | string = undefined;
-	let currentBet: undefined | string = 'Who will win the game between the Mavericks and the Miami Heat?';
+	// let currentBet: undefined | string = 'Who will win the game between the Mavericks and the Miami Heat?';
+	let currentBet: undefined | string = undefined;
 </script>
 
 <svelte:head>
@@ -77,19 +112,34 @@
 		</div>
 		<div class="row">
 			<div class="halfsection">
-				<h2>Next Bet</h2>
+				{#if questions.length === 0}
+					<div class="headings" style='margin-bottom: 0;'>
+						<h2>Next Bet</h2>
+						<h6>It looks like there isn't a next bet. Record a new one now!</h6>
+					</div>
+				{:else}
+					<h2>Select a bet from the list below!</h2>
+				{/if}
 				<div id="audio-controls">
 					{#if questions.length > 0}
 						<article id="question-cards">
 							{#each questions as question, index}
-								<!-- <button>{question}</button> -->
 								{#if index === 0}
-									<button class="question-button">{question}</button>
+									<button class="question-button"
+											id="question_{index}"
+											on:click={questionClicked}
+									>{question}</button>
 									{:else}
 									<hr>
-									<button class="question-button">{question}</button>
+									<button class="question-button"
+											id="question_{index}"
+											on:click={questionClicked}
+									>{question}</button>
 								{/if}
 							{/each}
+						</article>
+					{:else}
+						<article id="question-cards">
 						</article>
 					{/if}
 					<div id="audio-controls-buttons">
@@ -101,7 +151,19 @@
 			<div class="halfsection">
 				<h2>Current Bet</h2>
 				<article id="current-bet-card">
-					<h5>{currentBet}</h5>
+					{#if currentBet !== undefined}
+						<div class='headings'>
+							<h6>{currentBet}</h6>
+							<h6>Select the winner below!</h6>
+						</div>
+						<div class="row">
+							<button id="yes-button">Yes</button>
+							<button id="no-button">No</button>
+						</div>
+						<button id="cancel-button" on:click={cancelButtonClicked}>Cancel the current bet</button>
+					{:else}
+						<h6>It looks like there isn't a current bet. Start one now!</h6>
+					{/if}
 				</article>
 			</div>
 		</div>
@@ -215,6 +277,8 @@
 		flex-direction: row;
 		align-items: center;
 		align-content: center;
+		justify-content: center;
+		justify-items: center;
 		height: 100%;
 		width: 100%;
 	}
@@ -325,6 +389,38 @@
 		transform: scale(0.95);
 		
 		// make the padding larger
+		&:hover {
+			transform: scale(1);
+		}
+	}
+
+	h6 {
+		text-align: center;
+	}
+
+	#yes-button {
+		background-color: #7abd7e;
+		color: white;
+		border: none;
+		width: 100%;
+		height: 100%;
+		transform: scale(0.95);
+		transition: 0.5s;
+
+		&:hover {
+			transform: scale(1);
+		}
+	}
+
+	#no-button {
+		background-color: #ff6961;
+		border: none;
+		color: white;
+		width: 100%;
+		height: 100%;
+		transform: scale(0.95);
+		transition: 0.5s;
+
 		&:hover {
 			transform: scale(1);
 		}
