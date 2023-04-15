@@ -5,4 +5,6 @@ Run `python -m virtualenv ./.venv` to create a virtual environment and make sure
 # Grabbing the data
 Next run the `pip install -r ./mavericks_python_data/requirements.txt` command to install all the required packages.
 
+Put the downloaded `secrets.py` file in the `mavericks_python_data` folder.
+
 Finally run the `get_player_data.py` file to get the data.
