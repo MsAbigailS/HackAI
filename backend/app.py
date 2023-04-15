@@ -12,29 +12,46 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 app = Flask(__name__)
 CORS(app)
 
+with open("prompt.txt") as file:
+    systemPrompt = file.read()
+
 pastBets = [
     {
-        "side1": 500,
-        "side2": 800,
-        "side1Players": 50,
-        "side2Players": 60,
+        "yesPoints": 500,
+        "noPoints": 800,
+        "yesPlayers": 50,
+        "noPlayers": 60,
         "biggestBet": 100,
-        "winner": "side2",
+        "winner": "no",
         "timeToBet": 100
     },
     {
-        "side1": 1000,
-        "side2": 900,
-        "side1Players": 70,
-        "side2Players": 65,
+        "yesPoints": 1000,
+        "noPoints": 900,
+        "yesPlayers": 70,
+        "noPlayers": 65,
         "biggestBet": 200,
-        "winner": "side2",
+        "winner": "no",
         "timeToBet": 100
     }
-    ]
-currentBet = None
+]
 
-currentPoints = 100
+currentBet = None
+currentBets = {}
+
+currentPoints = 2189
+currentPlayer = "demo"
+
+leaderBoard = ["Player1", "Player2", "Player3", "Player4", "Player5", "DemoPlayer"]
+
+players = {
+    "Player1": 2600,
+    "Player2": 2500,
+    "Player3": 2400,
+    "Player4": 2300,
+    "Player5": 2200,
+    "DemoPlayer": 2789
+    }
 
 @app.route('/getCurrentPoints', methods=['GET'])
 def getCurrentPoints():
@@ -76,6 +93,11 @@ def setCurrentBetWinner():
         return "Success"
     else:
         return "Winner was not side1 or side2"
+    
+@app.route("/setBetChoice", methods=['POST'])
+def setBetChoice():
+    choice = request.form['choice']
+    #if choice i 
 
 @app.route('/transcription', methods=['POST'])
 def upload_file():
@@ -86,30 +108,33 @@ def upload_file():
         file.save(filename)
         audio_file = open(filename, 'rb')
         transcript = openai.Audio.transcribe("whisper-1", audio_file)
+        print(transcript['text'])
         return transcript['text']
     else:
         return "Invalid file type."
 
-@app.route("/getQuestions ", methods=['GET'])
+@app.route("/getQuestions", methods=['POST'])
 def getQuestions():
     transcript = request.form['transcript']
-    return prompt_chatbot_for_bets(transcript)['content']
+    answer = prompt_chatbot_for_bets(transcript)['content']
+    print(answer)
+    return answer
 
 
 def prompt_chatbot_for_bets(prompt):
     completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": """You are an assistant that will come up with bets in the form of a question similar 
-                                        to the following prompts using the information given by an announcer:
-                                        ____ team will win tonight's game?
-                                        Will ____ player earn a triple double playing tonight?
-                                        Format 5 questions with no additional context and the questions in a json object with opening and closing parenthesis  and keys in the form question1, question2, question3, question4, question5
-                                        """},
+            {"role": "system", "content": systemPrompt},
             {"role": "user", "content": prompt}
         ],
         max_tokens=200,
         temperature=0.7,
+        top_p=1,
     )
+    print(completion.choices)
     return completion.choices[0].message
 
+def updateLeaderboard():
+    leaderBoard = sorted(players.items(), key=lambda x: x[1], reverse=True)
+    print(leaderBoard)

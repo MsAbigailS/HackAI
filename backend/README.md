@@ -4,6 +4,8 @@ Since the backend is ridiculously convoluted at this point, I'll try to explain 
 ## Commands
 First start the backend with `flask run --host=0.0.0.0`.
 
+### Update 
+
 ### Getting Current Player Points
 GET
 `/getCurrentPoints`
@@ -54,7 +56,7 @@ with the form body
 file = file
 
 ### Getting Example Bets
-GET
+POST
 `/getQuestions`
 with the form body:
 transcript = transcript
