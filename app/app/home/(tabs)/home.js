@@ -13,7 +13,8 @@ export default function Home() {
 
     const router = useRouter();
     const addTeam = () => router.push("addTeam/add_team")
-    const merch = () => router.push("merchandise")
+    const merch = () => router.push("/home/(tabs)/merchandise")
+    const login = () => router.push("login/login")
 
     const teamNames = [ "Dallas Mavericks",
                         "Miami Heat",
@@ -94,9 +95,9 @@ export default function Home() {
             </View>
 
             <View style={styles.hello_prompt}>
-                <View style={styles.hello_title}>
+                <Pressable onPress = {login} style={styles.hello_title}>
                     <Text style={styles.header1}>Welcome back,</Text>
-                </View>
+                </Pressable>
                 <View style = {styles.hello_username}>
                     <Text style={styles.header2}>{userName}</Text>
                 </View>
@@ -110,7 +111,7 @@ export default function Home() {
             <View>
                 
             </View>
-            <Text style={styles.subhead}>Your favorite team</Text>
+            <Text style={styles.subhead}>Top Team:</Text>
             <View style={styles.team_container}>
                 <View style={styles.team_container_top}>
                     <Image source = {mavericksTeamImage} style={styles.team_logo}></Image>
@@ -125,8 +126,8 @@ export default function Home() {
                 </View>
             </View>
 
-            <Text style={styles.subhead2}>Your additional teams</Text>
-            <View style={styles.team_container}>
+            <Text style={styles.subhead2}>Additional teams</Text>
+            <View style={styles.team_container2}>
                 <View style={styles.team_container_top}>
                     <Image source = {miamiHeatImage} style={styles.team_logo}></Image>
                     <View style={styles.score_container}>
@@ -144,7 +145,7 @@ export default function Home() {
                     </View>
                 </View>
             </View>
-            <View style={styles.team_container}>
+            <View style={styles.team_container2}>
                 <View style={styles.team_container_top}>
                     <Image source = {bearImage} style={styles.team_logo}></Image>
                     <View style={styles.score_container}>
@@ -165,7 +166,7 @@ export default function Home() {
             
             <View style={styles.add_team_container}>
                 <Pressable onPress = {addTeam} style = {styles.add_button}>
-                    <Text>Add Team +</Text>
+                    <Text style={styles.add_text}>Add Team +</Text>
                 </Pressable>
             </View>
         </View>
@@ -176,7 +177,7 @@ export default function Home() {
 const styles = StyleSheet.create({
     homepageContainer: {
       flex: 1,
-      backgroundColor: '#fffff',
+      backgroundColor: 'white',
       alignItems: 'center',
     //   justifyContent: 'center',
     },
@@ -187,17 +188,21 @@ const styles = StyleSheet.create({
     header1: {
         // borderWidth: 2,
         fontSize: "25%",
-        paddingTop: 15
+        paddingTop: 15,
+        fontWeight: "bold"
     },
     header2: {
-        fontSize: "45%"
+        fontSize: "45%",
+        fontWeight: "bold",
+        marginBottom: 5
     },
     subhead: {
         fontSize: "20%",
         // borderTopWidth: 2,
         width: "100%",
         paddingLeft: 5,
-        marginTop: 10
+        marginTop: 10,
+        fontWeight: "bold"
     },
     subhead2: {
         fontSize: "20%",
@@ -205,6 +210,7 @@ const styles = StyleSheet.create({
         width: "100%",
         paddingLeft: 5,
         marginTop: 50,
+        fontWeight: "bold"
         // borderTopWidth: 2
     },
     buttonText2:{
@@ -218,7 +224,9 @@ const styles = StyleSheet.create({
     },
     header3: {
         fontSize: "25%",
-        paddingTop: 5
+        // borderWidth: 2,
+        // paddingTop: 5,
+        fontWeight: "bolder"
     },
     hello_title: {
         // borderWidth: 1,
@@ -232,15 +240,22 @@ const styles = StyleSheet.create({
         width: "100%"
     },
     hello_userpoints: {
-        borderBottomWidth: 1,
-        paddingBottom: 15,
+        // borderBottomWidth: 1,
+        // paddingBottom: 15,
         alignItems: "center",
-        width: "100%"
+        // marginTop: 10,
+        justifyContent: "center",
+        height: 40,
+        paddingBottom: 18,
+        width: "100%",
+        // borderTopWidth: 1,
+        borderBottomWidth: 2,
+        // fontWeight: "bold"
     },
     team_container: {
       borderWidth: 2,
       width: "95%",
-      height: "10%",
+      height: "13%",
     //   flexDirection: "row",
       padding: 10,
       marginTop: 10,
@@ -248,10 +263,30 @@ const styles = StyleSheet.create({
       backgroundColor: "white",
       justifyContent: "center",
       alignItems: "center",
+      shadowOpacity: 0.3,
+    //   shadowOffset: "center",
+      shadowColor: "grey"
       
     },
+    team_container2: {
+        borderWidth: 2,
+      width: "90%",
+      height: "9%",
+    //   flexDirection: "row",
+      padding: 17,
+      marginTop: 10,
+      borderRadius: 7,
+      backgroundColor: "white",
+      justifyContent: "center",
+      alignItems: "center",
+      alignItems: "center",
+      shadowOpacity: 0.3,
+    //   shadowOffset: "center",
+      shadowColor: "grey"
+        
+      },
     score_text_container:{
-        paddingLeft: 17
+        paddingLeft: 17,
     },
     team_container_top:{
         flexDirection: "row",
@@ -261,19 +296,6 @@ const styles = StyleSheet.create({
         // borderWidth: 2,
         width: "61%"
     },
-    team_container2: {
-        borderWidth: 2,
-        width: "95%",
-        height: "10%",
-        flexDirection: "row",
-        padding: 10,
-        marginTop: 10,
-        borderRadius: 7,
-        backgroundColor: "white",
-        justifyContent: "center",
-        alignItems: "center",
-        
-      },
     team_logo: {
       width: 45,
       height: 45,
@@ -321,7 +343,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         alignContent: "center",
         justifyContent: "center",
-        width: "100%"
+        width: "100%",
+        backgroundColor: "white"
     },
     button: {
         borderWidth: 1,
@@ -357,18 +380,27 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginRight: 5,
         borderRadius: 3,
-        height: "65%",
+        height: "78%",
         marginTop: 2,
         backgroundColor: "#407BFF",
     },
     add_button: {
         width: "25%",
         // height: "15%",
-        borderWidth: 2,
+        borderWidth: 1,
         borderRadius: 4,
         alignContent: "center",
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor:"#002b5c",
+        padding: 5,
+        alignItems: "center",
+        shadowOpacity: 0.3,
+        // shadowOffset: "center",
+        shadowColor: "grey"
+    },
+    add_text:{
+        color: "white"
     }
    
   
