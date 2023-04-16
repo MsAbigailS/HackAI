@@ -138,6 +138,8 @@ def setBetChoice():
     amount = request.form['amount']
     if currentBet is None:
         return "There is no current Bet"
+    if not allowBetting:
+        return "Betting has been disabled"
     if choice and player and amount:
         if players[player] < amount:
             return "Not enough points for bet"

@@ -63,6 +63,12 @@ Will return 1 of 5 results:
 - "Not a valid choice for player"
 - "Missing Form Values"
 
+### Cencel Betting
+GET
+`/cancelBet`
+No body
+returns "Success"
+
 ### Disable Betting
 GET
 `/disableBetting`
