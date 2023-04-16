@@ -3,10 +3,9 @@ import { StyleSheet, Text, View, Pressable, Image, Dimensions, TextInput } from 
 import { useRouter } from "expo-router";
 import { Animated } from 'react-native';
 import React, { useState, useEffect, Component } from 'react';
+import { SafeAreaView, ScrollView } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import Select from "react-select";
-// import { Carousel } from 'react-native-snap-carousel'
-// import { Animated } from'react-native'
 
 // import FadeIn from 'react-native-fade-in-image';
 
@@ -14,9 +13,6 @@ export default function merchandise() {
   const router = useRouter();
 
   const item_page = () => router.push('merchandisePage/item1_page')
-
-  const imageCarousel = ['../../images/mavHat.jpg']
-
 
   const [value, setState] = useState('0');
   const [value2, setState2] = useState('0');
@@ -83,7 +79,8 @@ export default function merchandise() {
   }
 
   return (
-    <View>
+    <SafeAreaView style={styles.container2}>
+      <ScrollView>
       <View>
         <Text style={styles.header}>Merchandise</Text>
       </View>
@@ -110,10 +107,12 @@ export default function merchandise() {
           <Image style={styles.image} source={require("../../images/mavJersey.jpg")} />
           <Text style={styles.points}>{IMAGES[2].points} points</Text>
         </View>
-
-        {/* </FadeInView> */}
+        <View>
+          <Image style={styles.image} source={require("../../images/mavJersey.jpg")} />
+          <Text style={styles.points}>{IMAGES[2].points} points</Text>
+        </View>
+        
       </View>
-      {/* <StatusBar style="auto" /> */}
 
       <View style={styles.checkout_container}>
         <View>
@@ -146,43 +145,41 @@ export default function merchandise() {
           <SelectDropdown
               data={["delivery", "pick-up"]}
               defaultButtonText="Delivery Options"
-              dropdownStyle={
-                {width: 200}
-              }
               onSelect={(selectedItem) => {
                 console.log(selectedItem)
               }}/>
         </View>
       </View>
       <View style={styles.buttonContainer}>
-        <Pressable style={styles.button}>
+        {/* <Pressable style={styles.button}>
           <Text style={styles.buttonText} onPress={() => router.push("home/merchandise")}>Go Back</Text>
-        </Pressable>
+        </Pressable> */}
         <Pressable style={styles.button}>
           <Text style={styles.buttonText} onPress={() => item_page()}>Redeem</Text>
         </Pressable>
       </View>
       <StatusBar style="auto" />
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container2: {
+    flex: 1,
+    paddingTop: StatusBar.currentHeight,
+  },
   listView: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignSelf: "center",
     textAlign: "center",
-    borderWidth: 2
-  },
-  heroImageTop: {
-    borderWidth: 5,
-    borderColor: "pink",
-    height: "50%"
+    justifyContent: "center",
+    //borderWidth: 2,
+    borderBottomWidth: 3,
+    borderRadius: 10
   },
   checkout_container:{
-    borderWidth: 2,
-    borderColor: "red",
     alignItems: "center",
   },
   container: {
@@ -198,10 +195,7 @@ const styles = StyleSheet.create({
     paddingLeft: "2%",
     paddingBottom: "2%",
     alignSelf: "center",
-    marginTop: 25,
-    // width: "100%",
-    // alignItems: "center",
-    borderWidth: 2
+    marginTop: 25
   },
   image: {
     //backgroundColor: 'red',
@@ -240,7 +234,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 15,
     justifyContent: "center",
-    marginTop: "10%",
+    marginTop: "5%",
     marginLeft: 10
   },
   buttonText: {
@@ -262,14 +256,14 @@ const styles = StyleSheet.create({
     // padding: "2%",
     marginLeft: 10,
     borderRadius: 10,
-    width: "10%"
+    width: "20%"
   },
   profileInput: {
     fontSize: "21%",
     textAlign: "center",
     alignItems: "center",
     backgroundColor: "#D3D3D3",
-    width: "10%",
+    width: "20%",
     height: "100%",
     paddingLeft: "1%",
     paddingRight: "1%",
@@ -280,6 +274,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     width: "100%",
-    borderWidth: 2
+    borderWidth: 2,
+    borderRadius: 5,
+    paddingLeft: "2%",
+    paddingRight: "2%"
   },
 });

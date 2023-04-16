@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { Text, View, StyleSheet, Image, Pressable, TextInput } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import { SafeAreaView, ScrollView, StatusBar } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import { CountDownText } from 'react-native-countdown-timer-text';
@@ -14,6 +14,7 @@ import bettingImage from '../../images/betting_image.svg';
 import betting_top_image_1 from '../../images/mavs_betting_image_1.jpg';
 import betting_top_image_2 from '../../images/mavs_betting_image_2.jpg';
 import betting_top_image_3 from '../../images/mavs_betting_image_3.jpg';
+import { Animated } from 'react-native'
 import { Alert} from 'react-native';
 import { Animated } from 'react-native'
 // import { Carousel } from 'react-native-auto-carousel'
