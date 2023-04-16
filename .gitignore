@@ -10,3 +10,5 @@ backend/main.ipynb
 backend/test.csv
 backend/finalData.csv
 backend/data.csv
+node_modules
+secrets.js
