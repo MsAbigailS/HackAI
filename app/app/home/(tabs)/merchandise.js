@@ -201,8 +201,8 @@ const styles = StyleSheet.create({
     //backgroundColor: 'red',
     //width: (Dimensions.get('window').width / 3) - 15,
     //height: 300,
-    width: 50,
-    height: 50,
+    width: 125,
+    height: 125,
     marginTop: 10,
     resizeMode: "contain"
   },

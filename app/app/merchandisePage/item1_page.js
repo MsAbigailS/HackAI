@@ -48,7 +48,7 @@ export default function waitingPage() {
                 <Text>Back</Text>
             </Pressable>
             </View>
-            <Text>Dallas Mavericks New Era 2022 Fairway Golf Tee Green Snapback</Text>
+            <Text style={styles.prodTitle}>Dallas Mavericks New Era 2022 Fairway Golf Tee Green Snapback</Text>
             <Image style = {styles.productImage} source = {prodImage}/>
             <Text style={styles.pointText}>20 Points Required</Text>
             <View>
@@ -94,6 +94,10 @@ const styles = StyleSheet.create({
         marginTop: 20,
         backgroundColor: "#D3D3D3"
     },
+    prodTitle:{
+        fontSize: 40,
+        fontWeight: "bold"
+    },
     backButton:{
         color: "black",
         fontSize: 20,
@@ -125,11 +129,12 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     button3:{
-        borderWidth:1,
-        borderColor: "blue",
+        // borderWidth:1,
+        // borderColor: "blue",
         width: 55,
-        marginTop: 20,
-        marginBottom: 5,
+        marginTop: 80,
+        marginBottom: 20,
+        // marginBottom: 5,
         marginLeft: 10,
         paddingLeft: "2%",
         paddingRight: "2%",

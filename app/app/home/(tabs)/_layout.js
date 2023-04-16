@@ -5,6 +5,7 @@ export default function Layout() {
         <Tabs
             screenOptions={{headerShown: false}}
         >
+            {/* <StatusBar hidden={true}/> */}
             <Tabs.Screen
                 name="home"
                 options={
