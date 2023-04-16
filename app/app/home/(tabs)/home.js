@@ -4,11 +4,14 @@ import mavericksTeamImage from '../../images/dallas_mavericks_team_logo.png';
 import miamiHeatImage from '../../images/miami_heat_team_logo.png';
 import profile_picture from '../../images/profile_picture.png'
 import heroImage from '../../images/basketball_hero_image.jpg'
+import React, { Component, useState, useEffect } from 'react';
+import { Animated } from 'react-native'
 
 export default function Home() {
 
     const router = useRouter();
     const addTeam = () => router.push("addTeam/add_team")
+    const merch = () => router.push("merchandisePage/march_page")
 
     const teamNames = [ "Dallas Mavericks",
                         "Miami Heat"]
@@ -21,12 +24,49 @@ export default function Home() {
 
     userPoints = 500
     userName = "John Doe"
+    class ImageLoader extends Component{
+        state = {
+          opacity: new Animated.Value(0),
+        }
+    
+        onLoad = () => {
+          Animated.timing(this.state.opacity, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true,
+          }).start();
+        }
+    
+        render() {
+          return(
+            <Animated.Image
+              onLoad={this.onLoad}
+              {...this.props}
+              style={[
+                {
+                  opacity: this.state.opacity,
+                  transform: [
+                    {
+                      scale: this.state.opacity.interpolate({
+                        inputRange: [0,1],
+                        outputRange: [0.85, 1],
+                      })
+                    }
+                  ]
+                },
+                this.props.style,
+              ]
+              }
+            />
+          )
+        }
+      }
 
     return (
         <View style={styles.homepageContainer}>
             <View style={styles.overlay_images}>
-                <Image source = {heroImage} style={styles.hero_image}/>
-                <Image source = {profile_picture} style={styles.profile_picture}/>
+                <ImageLoader source = {heroImage} style={styles.hero_image}/>
+                <ImageLoader source = {profile_picture} style={styles.profile_picture}/>
             </View>
 
             <View style={styles.hello_prompt}>
@@ -54,7 +94,7 @@ export default function Home() {
                         <Text style={styles.team_name}>{teamNames[0]}</Text>
                         <Text style={styles.score_text_container}>117-138 vs. Spurs Apr 9</Text>
                     </View>
-                    <Pressable style={styles.button}>
+                    <Pressable onPress = {merch} style={styles.button}>
                         <Text>Redeem Points</Text>
                     </Pressable>
                 </View>
@@ -69,7 +109,7 @@ export default function Home() {
                         <Text style={styles.score_text_container}>vs. Bucks Apr 16, 4:30 PM CDT</Text>
                     </View>
                     <View style={styles.two_button_container}>
-                        <Pressable style={styles.button3}>
+                        <Pressable onPress = {merch} style={styles.button3}>
                             <Text>Redeem Points</Text>
                         </Pressable>
                         <Pressable style={styles.button2}>
@@ -146,6 +186,7 @@ const styles = StyleSheet.create({
     },
     team_container: {
       borderWidth: 2,
+      borderColor: "rgba(2, 0, 15, 0.30)",
       width: "95%",
       height: "10%",
     //   flexDirection: "row",

@@ -1,11 +1,11 @@
 import { useRouter } from 'expo-router';
 import { Text, View, StyleSheet, Image, Pressable, TextInput } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import { SafeAreaView, ScrollView, StatusBar } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import { CountDownText } from 'react-native-countdown-timer-text';
 // import React, { Component } from 'react';
-import CountDown from 'react-native-countdown-component';
+// import CountDown from 'react-native-countdown-component';
 // import ProgressBar from 'react-progress-bar-timer';
 import mavericksTeamImage from '../../images/dallas_mavericks_team_logo.png';
 import miamiHeatImage from '../../images/miami_heat_team_logo.png';
@@ -13,6 +13,7 @@ import bettingImage from '../../images/betting_image.svg';
 import betting_top_image_1 from '../../images/mavs_betting_image_1.jpg';
 import betting_top_image_2 from '../../images/mavs_betting_image_2.jpg';
 import betting_top_image_3 from '../../images/mavs_betting_image_3.jpg';
+import { Animated } from 'react-native'
 import { Alert} from 'react-native';
 
 export default function Betting() {
@@ -87,21 +88,59 @@ export default function Betting() {
         bet_skipped()
     }
 
+    class ImageLoader extends Component{
+        state = {
+          opacity: new Animated.Value(0),
+        }
+    
+        onLoad = () => {
+          Animated.timing(this.state.opacity, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true,
+          }).start();
+        }
+    
+        render() {
+          return(
+            <Animated.Image
+              onLoad={this.onLoad}
+              {...this.props}
+              style={[
+                {
+                  opacity: this.state.opacity,
+                  transform: [
+                    {
+                      scale: this.state.opacity.interpolate({
+                        inputRange: [0,1],
+                        outputRange: [0.85, 1],
+                      })
+                    }
+                  ]
+                },
+                this.props.style,
+              ]
+              }
+            />
+          )
+        }
+      }
 
     return (
         <View style={styles.container}>
             {/* Hero Image */}
             <View>
-                <Image source = {betting_top_image_2} style={styles.hero_image}/>
+                <ImageLoader source = {betting_top_image_2} style={styles.hero_image}/>
+                {/* <Image source = {betting_top_image_2} style={styles.hero_image}/> */}
             </View>
 
             <View style = {styles.timer_container}>
-                <CountDown
+                {/* <CountDown
                     until = {30}
                     onFinish={() => alert('finished')}
                     timeToShow = {['S']}
                     size = {30}
-                />
+                /> */}
             </View>
 
             <View style={styles.prompt_container}>

@@ -19,7 +19,10 @@ export default function BetPlaced() {
     useEffect(() => {
         onLoad();
     }, [])
-
+    
+    async function wait(milleseconds) {
+        await new Promise(resolve => setTimeout(resolve, milleseconds));
+    }
     return (
         <View style={styles.container}>
             <View style={styles.animation_container}>
@@ -30,9 +33,6 @@ export default function BetPlaced() {
 
 }
 
-async function wait(milleseconds) {
-    await new Promise(resolve => setTimeout(resolve, milleseconds));
-}
 
 const styles = StyleSheet.create({
     container: {
