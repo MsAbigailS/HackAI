@@ -1,17 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Pressable, Image, Dimensions, TextInput } from 'react-native';
-import picture from "../app/images/login_picture.png";
-import googleIcon from "../app/images/google_logo_picture.png";
+// import picture from "../assets/login_picture.png";
+import googleIcon from "../images/google_logo_picture.png";
+import signupPicture from '../images/signup_picture.png';
 import { useRouter } from "expo-router";
 import { Animated } from 'react-native';
 import React, { useState, useEffect, Component} from 'react';
 // import FadeIn from 'react-native-fade-in-image';
 
-export default function Login() {
+export default function signup() {
   const router = useRouter();
 
-  const login = () => router.push("home")
-  const signUp = () => router.push("signup/signup")
+  const signUp = () => router.push("home")
+  const login = () => router.push("login/login")
+
   
 
   class ImageLoader extends Component{
@@ -61,16 +63,19 @@ export default function Login() {
     <View style={styles.container}>
       {/* <FadeInView> */}
 
-      <ImageLoader style={styles.image} source={picture} />
+      <ImageLoader style={styles.image} source={signupPicture} />
 
-      <Text style={styles.header}>Login</Text>
+      <Text style={styles.header}>Sign Up</Text>
       <View style={styles.inputContainer}>
+        <TextInput style={styles.textInput} placeholder='Email' placeholderTextColor="grey"></TextInput>
         <TextInput style={styles.textInput} placeholder='Username' placeholderTextColor="grey"></TextInput>
-        <TextInput style={styles.textInput} placeholder='Password' placeholderTextColor="grey" secureTextEntry={true}></TextInput>
+        <TextInput style={styles.textInput} placeholder='Password' placeholderTextColor="grey"></TextInput>
+        <Text>Passwords must be 8 characters long </Text>
+        <Text>with at least one (1) number</Text>
       </View>
       <View style={styles.buttonContainer}>
         <Pressable style={styles.button}>
-          <Text style={styles.buttonText} onPress={login} >Login</Text>
+          <Text style={styles.buttonText} onPress={signUp} >Sign Up</Text>
         </Pressable>
       </View>
       <Text style={styles.quickText}>OR</Text>
@@ -79,13 +84,13 @@ export default function Login() {
           <Image style={styles.smallIcon} source={googleIcon}/>
         </View>
         <Pressable style={styles.googleButton}>
-          <Text style={styles.googleText}>Login with Google</Text>
+          <Text style={styles.googleText}>Sign in with Google</Text>
         </Pressable>
       </View>
       <View style={styles.signUpContainer}>
-        <Text>Don't have an account?</Text>
+        <Text>Already have an account?</Text>
         <Pressable style={styles.signUpButton}>
-          <Text style={styles.signUpText} onPress={signUp}>Sign up</Text>
+          <Text style={styles.signUpText} onPress={login}>Login</Text>
         </Pressable>
       </View>
       <StatusBar style="auto" />
@@ -145,23 +150,31 @@ const styles = StyleSheet.create({
     fontSize: "50%",
     fontWeight: "bold",
     paddingLeft: "2%",
-    paddingBottom: "2%"
+    // borderWidth: 2
+    // paddingBottom: "2%"
   },
   image: {
-    height: "45%",
-    width: "100%",
+    height: "47%",
+    width: "47%",
+    // borderWidth: 2,
+    marginLeft: 100,
+    // padding: 30 
+    marginTop: 20
   },
   inputContainer:{
     width: "100%",
     paddingLeft: "5%",
     paddingRight: "5%",
-    height: "12%"
+    height: "20%",
+    // borderWidth: 3,
+    // borderColor: "green",
+    justifyContent: "center"
   },
   textInput: {
     fontSize: 30,
     // backgroundColor: "#ffffff",
     width: "100%",
-    height: "45%",
+    height: "20%",
     margin: 5,
     // borderWidth: 1,
     // borderColor: 'brown',
@@ -172,7 +185,7 @@ const styles = StyleSheet.create({
     // borderColor: "purple",
     width: "100%",
     height: "6%",
-    marginTop: "5%",
+    // marginTop: "5%",
     paddingLeft: "5%",
     paddingRight: "5%"
   },

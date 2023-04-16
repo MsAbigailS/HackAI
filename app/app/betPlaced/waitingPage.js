@@ -1,17 +1,33 @@
 import { useRouter } from 'expo-router';
 import { Text, View, StyleSheet, Image, Pressable, TextInput } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { SafeAreaView, ScrollView, StatusBar } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import { CountDownText } from 'react-native-countdown-timer-text';
 import { Alert} from 'react-native';
 import waiting_page_hero_image from '../images/confirmation_page_image.jpeg'
+import { API_URL } from '../home/(tabs)/secrets';
 
 export default function waitingPage() {
 
     const router = useRouter();
 
     const homepage = () => router.push("home")
+
+    const [bettingPrompt, setBettingPrompt] = useState(false);
+
+    useEffect(() => {
+        fetch(`${API_URL}/getCurrentBet`, {
+            method: 'GET',
+        }).then((response) => response.json())
+        .then((json) => {
+            setBettingPrompt(json.bet);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+
+    }, []);
     
     return (
         <View style={styles.container}>
@@ -25,8 +41,8 @@ export default function waitingPage() {
             
             <View style = {styles.result_wait_container}>
                 <Text style = {styles.sub_title_text}>The results for:</Text>
-                <Text style = {styles.bet_prompt}>Will Dwight Powell make the shot xoxo?</Text>
-                <Text style = {styles.sub_title_text2}>Will be release shortly!</Text>
+                <Text style = {styles.bet_prompt}>{bettingPrompt}</Text>
+                <Text style = {styles.sub_title_text2}>Will be released shortly!</Text>
             </View>
             
             <Pressable onPress = {homepage} style = {styles.btn_active}>
@@ -100,7 +116,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderRadius: 5,
         borderColor: "rgba(2, 0, 15, 0.10)",
-        fontSize: "30%",
+        fontSize: "18%",
         padding: 10
     },
     prompt: {

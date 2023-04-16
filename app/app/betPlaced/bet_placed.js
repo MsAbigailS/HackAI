@@ -18,6 +18,7 @@ export default function BetPlaced() {
 
     useEffect(() => {
         onLoad();
+
     }, [])
     
     async function wait(milleseconds) {
