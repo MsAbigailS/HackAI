@@ -8,6 +8,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import { Alert} from 'react-native';
 import waiting_page_hero_image from '../images/confirmation_page_image.jpeg'
 import prodImage from "../images/mavHat.jpg"
+import { API_URL } from '../home/(tabs)/secrets';
 
 export default function waitingPage() {
 
@@ -22,8 +23,8 @@ export default function waitingPage() {
         // Buying An Item POST /buyItem has a form: player = player itemAmount = itemAmount
         const formData = new FormData();
         formData.append('player', 'DemoPlayer');
-        formData.append('itemAmount', '20');
-        const response = await fetch('http://localhost:3000/buyItem', {
+        formData.append('itemAmount', 20);
+        const response = await fetch(API_URL + '/buyItem', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -34,7 +35,7 @@ export default function waitingPage() {
         .catch((error) => {
             console.error('Error:', error);
         });
-
+        console.log('response: ', response);
 
 
         redeemed();
