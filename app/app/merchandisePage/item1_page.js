@@ -34,7 +34,7 @@ export default function waitingPage() {
         .catch((error) => {
             console.error('Error:', error);
         });
-
+        console.log('response: ', response);
 
 
         redeemed();
