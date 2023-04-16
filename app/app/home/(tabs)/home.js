@@ -197,6 +197,7 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
+
     homepageContainer: {
       flex: 1,
       backgroundColor: 'white',
@@ -276,6 +277,7 @@ const styles = StyleSheet.create({
     },
     team_container: {
       borderWidth: 2,
+      borderColor: "rgba(2, 0, 15, 0.30)",
       width: "95%",
       height: "13%",
     //   flexDirection: "row",
