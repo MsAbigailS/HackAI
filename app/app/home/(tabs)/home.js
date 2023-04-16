@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
         // fontWeight: "bold"
     },
     team_container: {
-      borderWidth: 2,
+      borderWidth: 0.4,
       borderColor: "rgba(2, 0, 15, 0.30)",
       width: "95%",
       height: "13%",
@@ -287,24 +287,24 @@ const styles = StyleSheet.create({
       backgroundColor: "white",
       justifyContent: "center",
       alignItems: "center",
-      shadowOpacity: 0.3,
+      shadowOpacity: 0.9,
     //   shadowOffset: "center",
       shadowColor: "grey"
       
     },
     team_container2: {
-        borderWidth: 2,
+        borderWidth: 0.2,
       width: "90%",
       height: "9%",
     //   flexDirection: "row",
       padding: 17,
-      marginTop: 10,
+      marginTop: 16,
       borderRadius: 7,
       backgroundColor: "white",
       justifyContent: "center",
       alignItems: "center",
       alignItems: "center",
-      shadowOpacity: 0.3,
+      shadowOpacity: 0.5,
     //   shadowOffset: "center",
       shadowColor: "grey"
         
