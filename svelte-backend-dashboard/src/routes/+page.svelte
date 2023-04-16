@@ -4,9 +4,15 @@
 	import { API_URL } from './secrets'
 
 	let media: any[] = [];
-	let mediaRecorder: any = null;
-	let url = API_URL
+	let mediaRecorder: MediaRecorder | null = null;
+	let url = API_URL;
 	let questions: string[] = [];
+	let timer: number;
+	const secondsToBet = 30;
+	let progressValue = 0;
+	let progressTick = 60;
+	let interval: number;
+	let leaderboardTimer: number;
 
 	onMount(async () => {
 		const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -35,6 +41,7 @@
 			});
 			console.log(response);
 			const data = await response.text();
+			console.log('transcription response: ' + data);
 			// do a POST request to /getQuestions with the form body: transcript = transcript
 			const secondFormData = new FormData();
 			secondFormData.append('transcript', data);
@@ -52,15 +59,52 @@
 			transcription = secondData;
 		} // end of event listeners
 
-
+		// TODO: uncomment this when the backend is ready
+		// set interval for leaderboard / past bets
+		leaderboardTimer = setInterval(async () => {
+			const formData = new FormData();
+			formData.append('number', '5');
+			const response = await fetch(`${url}/getPastBets`, {
+				method: 'POST',
+				body: formData
+			});
+			const data = await response.text();
+			console.log(data);
+			// do a GET request to /getLeaderboard
+			const leaderboardResponse = await fetch(`${url}/getLeaderboard`);
+			const leaderboardData = await leaderboardResponse.text();	
+			console.log(leaderboardData);
+		}, 10 * 1000);
 
 	});  // end of onmount
+
+	async function handleRecording() {
+		if(!mediaRecorder) {
+			console.log('media recorder is null');
+			return;
+		}
+		if (mediaRecorder.state === 'inactive') {
+			startRecording();
+		} else {
+			stopRecording();
+		}
+	}
+
 	async function startRecording(){ 
+		if(!mediaRecorder) {
+			console.log('media recorder is null');
+			return;
+		}
 		console.log('starting recording...')
 		media.length = 0;
 		mediaRecorder.start()
 	}
+
 	async function stopRecording() { 
+		if(!mediaRecorder) {
+			console.log('media recorder is null');
+			return;
+		}
 		mediaRecorder.stop() 
 		console.log('stopping recording...')
 	}
@@ -73,8 +117,6 @@
 
 		// set the current bet to the question at the index
 		currentBet = questions[questionIndex];
-
-		//TODO: send a POST request
 
 		// POST /setCurrentBet Form Body: bet = bet (text of bet) Will return 1 of 3 results:
 		// "There is already a current bet"
@@ -89,15 +131,94 @@
 		});
 		const data = await response.text();
 		console.log(data);
+
+		timer = setInterval(async () => {
+			console.log('pinging to check for bet');
+			if (currentBet === undefined) {
+			} else {
+				const response = await fetch(`${url}/getCurrentBet`);
+				const data = await response.json();
+				currentBetObject = data;
+			}
+		}, 2000);
+
+		// delay everything after this point by 1000 seconds
+		await new Promise(resolve => setTimeout(resolve, 1000));
+		
+		progressValue = 0;
+		console.log('starting a timer for ' + secondsToBet + ' seconds')
+		console.log('the progress tick is ' + progressTick + ' milliseconds/progress')
+		interval = setInterval(async () => {
+			progressValue += progressTick;
+			if (progressValue > secondsToBet * 1000) {
+				clearInterval(interval);
+				clearInterval(timer);
+				// GET /disableBetting No Body Will disallow betting
+				const response = await fetch(`${url}/disableBetting`);
+				console.log(await response.text());
+			}
+		}, progressTick);
+
 	}
 
 	async function cancelButtonClicked() {
-		// TODO: cancel current bet
+		// use GET /cancelBet No body returns "Success"
+		const response = await fetch(`${url}/cancelBet`);
+		console.log(await response.text());
+		clearInterval(timer);
+		clearInterval(interval);
+		currentBetObject = undefined;
+		currentBet = undefined;
+		progressValue = 0;
+	}
+
+	async function clearObjects() {
+		clearInterval(timer);
+		clearInterval(interval);
+		currentBetObject = undefined;
+		currentBet = undefined;
+		progressValue = 0;
+	}
+
+	async function yesButtonClicked() {
+		// use POST /SetCurrentBetWinner Form body: winner = "yes" or "no"
+		const formData = new FormData();
+		formData.append('winner', 'yes');
+		const response = await fetch(`${url}/setCurrentBetWinner`, {
+			method: 'POST',
+			body: formData
+		});
+		console.log(await response.text());
+		await clearObjects();
+	}
+
+	async function noButtonClicked() {
+		// use POST /SetCurrentBetWinner Form body: winner = "yes" or "no"
+		const formData = new FormData();
+		formData.append('winner', 'no');
+		const response = await fetch(`${url}/setCurrentBetWinner`, {
+			method: 'POST',
+			body: formData
+		});
+		console.log(await response.text());
+		await clearObjects();
 	}
 
 	let transcription: undefined | string = undefined;
 	// let currentBet: undefined | string = 'Who will win the game between the Mavericks and the Miami Heat?';
 	let currentBet: undefined | string = undefined;
+
+	interface BetObject {
+		bet: string,
+		biggestBet: number,
+		noPlayers: number,
+		noPoints: number,
+		winner: string,
+		yesPlayers: number,
+		yesPoints: number
+	}
+
+	let currentBetObject: undefined | BetObject = undefined;
 </script>
 
 <svelte:head>
@@ -143,8 +264,7 @@
 						</article>
 					{/if}
 					<div id="audio-controls-buttons">
-						<button on:click={startRecording}>Record</button>
-						<button on:click={stopRecording}>Stop</button>
+						<button id="record-button" on:click={handleRecording}>Record</button>
 					</div>
 				</div>
 			</div>
@@ -152,15 +272,34 @@
 				<h2>Current Bet</h2>
 				<article id="current-bet-card">
 					{#if currentBet !== undefined}
+						{#if progressValue >= 0 && progressValue <= secondsToBet*1000}
+							<h6>Time remaining: {Math.floor((secondsToBet*1000 - progressValue)/1000)} seconds</h6>
+							<progress id="progress-bar" max="{secondsToBet*1000}" value = "{progressValue}" />
+						{/if}
+						{#if currentBetObject !== undefined}
+							<!-- <h6>{currentBetObject.noPlayers}</h6> -->
+						{/if}
 						<div class='headings'>
 							<h6>{currentBet}</h6>
-							<h6>Select the winner below!</h6>
+							{#if currentBetObject !== undefined && progressValue <= secondsToBet*1000}
+								<h5 id="yes-stats">Yes: {currentBetObject.yesPlayers} players, {currentBetObject.yesPoints} points</h5>
+								<h5 id="no-stats">No: {currentBetObject.noPlayers} players, {currentBetObject.noPoints} points</h5>
+								<div />
+							{:else}
+								<h6>Select the winner below!</h6>
+							{/if}
 						</div>
 						<div class="row">
-							<button id="yes-button">Yes</button>
-							<button id="no-button">No</button>
+							{#if progressValue >= secondsToBet*1000}
+								<button id="yes-button" on:click={yesButtonClicked}>Yes</button>
+								<button id="no-button" on:click={noButtonClicked}>No</button>
+							{/if}
 						</div>
-						<button id="cancel-button" on:click={cancelButtonClicked}>Cancel the current bet</button>
+						{#if progressValue >= secondsToBet*1000}
+							<button id="cancel-button" on:click={cancelButtonClicked}>Cancel the current bet</button>
+						{:else}
+							<button id="big-cancel-button" on:click={cancelButtonClicked}>Cancel the current bet</button>
+						{/if}
 					{:else}
 						<h6>It looks like there isn't a current bet. Start one now!</h6>
 					{/if}
@@ -271,6 +410,7 @@
 		flex-direction: column;
 		align-items: center;
 		align-content: center;
+		margin-bottom: 10px;
 	}
 	.row {
 		display: flex;
@@ -320,6 +460,12 @@
 
 	#homescreen {
 		background-color: rgb(255, 255, 255);
+		// change this linear gradient to be white
+		background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url("https://upload.wikimedia.org/wikipedia/en/thumb/9/97/Dallas_Mavericks_logo.svg/800px-Dallas_Mavericks_logo.svg.png");
+		background-position: center center;
+		background-repeat: no-repeat;
+		// make the background smaller
+		background-size: 32%;
 	}
 
 	#current-bet-card {
@@ -333,10 +479,6 @@
 
 	h2 {
 		margin-bottom: 0;
-	}
-
-	h3 {
-		text-align: center;
 	}
 
 	#question-cards {
@@ -398,6 +540,14 @@
 		text-align: center;
 	}
 
+	#yes-stats {
+		color: #7abd7e;
+	}
+
+	#no-stats {
+		color: #ff6961;
+	}
+
 	#yes-button {
 		background-color: #7abd7e;
 		color: white;
@@ -424,6 +574,45 @@
 		&:hover {
 			transform: scale(1);
 		}
+	}
+
+	#big-cancel-button {
+		border: none;
+		color: white;
+		width: 100%;
+		height: 100%;
+		transform: scale(0.95);
+		transition: 0.5s;
+
+		&:hover {
+			transform: scale(1);
+		}
+	}
+
+	#cancel-button {
+		border: none;
+		color: white;
+		width: 100%;
+		height: 30px;
+		transform: scale(0.95);
+		transition: 0.5s;
+
+		&:hover {
+			transform: scale(1);
+		}
+	}
+
+	#progress-bar {
+		height: 50px;
+	}
+
+	h5 {
+		// make this slightly smaller than h6
+		font-size: 0.8em;
+	}
+
+	#record-button {
+		height: 80px;
 	}
 
 </style>
