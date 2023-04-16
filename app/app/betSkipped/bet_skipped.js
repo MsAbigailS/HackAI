@@ -7,7 +7,7 @@ import basketball_gif from '../images/basketball_spin.gif';
 export default function BetPlaced() {
 
     const router = useRouter();
-    const homepage = () => router.push("home")
+    const homepage = () => router.push("betSkipped/bet_skipped_return")
 
 
     onLoad = async () => {

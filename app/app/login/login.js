@@ -11,7 +11,7 @@ export default function Login() {
   const router = useRouter();
 
   const login = () => router.push("home")
-  const signUp = () => router.push("signup")
+  const signUp = () => router.push("signup/signup")
   
 
   class ImageLoader extends Component{
