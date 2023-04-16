@@ -273,7 +273,7 @@ def getQuestions():
 @app.route("/ask", methods=["POST"])
 def getQNA():
     question = request.form["question"]
-    answer = prompt_chatbot_for_bets(question)["content"]
+    answer = prompt_chatbot_for_answers(question)["content"]
     print(answer)
     return answer
 
