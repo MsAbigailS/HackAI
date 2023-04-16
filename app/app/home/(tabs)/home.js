@@ -70,7 +70,7 @@ export default function Home() {
                       }
 
     const [userPoints, setUserPoints] = useState(0);
-    const [userName, setUserName] = useState("John Doe");
+    const [userName, setUserName] = useState("DemoPlayer");
 
     useEffect(() => {
         const formData = new FormData();
