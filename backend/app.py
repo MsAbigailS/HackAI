@@ -81,21 +81,8 @@ def updateLeaderboard():
 
 updateLeaderboard()
 
-sm = boto3.Session().client(service_name='runtime.sagemaker', region_name='us-east-1')
+completeData = pd.read_csv('./data.csv')
 
-completeData = pd.read_csv("./finalData.csv")
-X_train = completeData[:4]
-scaler = preprocessing.StandardScaler().fit(X_train)
-del completeData, X_train
-
-testData = pd.read_csv("./test.csv")
-X_test = testData[:4]
-X_test_scaled = scaler.transform(X_test)
-test_samples = [line.rstrip('\n')for line in open('test.csv')]
-test = test_samples[:10]
-sample = bytes(test, 'utf-8')
-response = sm.invoke_endpoint(EndpointName="s3://sagemaker-us-east-1-448113256925/model/capture/", Body=sample, ContentType='text/csv')
-print(response['Body'].read())
 
 @app.route('/getCurrentPoints', methods=['POST'])
 def getCurrentPoints():
