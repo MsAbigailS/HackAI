@@ -3,54 +3,37 @@ import { Text, View, StyleSheet, Image, Pressable, TextInput } from 'react-nativ
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, ScrollView, StatusBar } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
-import SelectDropdown from 'react-native-select-dropdown';
-// import { CountDownText } from 'react-native-countdown-timer-text';
+import { CountDownText } from 'react-native-countdown-timer-text';
 import { Alert} from 'react-native';
 import waiting_page_hero_image from '../images/confirmation_page_image.jpeg'
-import prodImage from "../images/mavHat.jpg"
+import animated_shopping_cart from '../images/animat-shopping-cart-color.gif'
 
-export default function waitingPage() {
+export default function successfulRedeem() {
 
     const router = useRouter();
 
     const homepage = () => router.push("home")
-    const redeemed = () => router.push("merchandisePage/successful_redeem")
-    const cart = () => router.push("merchandisePage/put_in_cart")
 
+    onLoad = async () => {
+        await wait(2000);
+        // alert("AHHHH")
+        homepage();
+    }
+
+    useEffect(() => {
+        onLoad();
+    }, [])
+    
+    async function wait(milleseconds) {
+        await new Promise(resolve => setTimeout(resolve, milleseconds));
+    }
+    
     return (
         <View style={styles.container}>
-            <View style={{alignSelf: "left"}}>
-            <Pressable style = {styles.button3} onPress = {() => router.push("home/merchandise")}>
-                <Text>Back</Text>
-            </Pressable>
-            </View>
-            <Text>Dallas Mavericks New Era 2022 Fairway Golf Tee Green Snapback</Text>
-            <Image style = {styles.productImage} source = {prodImage}/>
-            <Text style={styles.pointText}>20 Points Required</Text>
-            <View>
-                <Text style={styles.buttonTopic}>Size</Text>
-                    <SelectDropdown style={styles.selectOption}
-                        data={["XS", "S", "M", "L", "XL"]}
-                        defaultButtonText="M"
-                        onSelect={(selectedItem) => {
-                            console.log(selectedItem)
-                        }}/>
-                <Text style={styles.buttonTopic}>Color</Text>
-                    <SelectDropdown style={styles.selectOption}
-                        data={["Green", "Blue", "Grey"]}
-                        defaultButtonText="Green"
-                        onSelect={(selectedItem) => {
-                            console.log(selectedItem)
-                        }}/>
-            </View>
-
-            <View>
-                <Pressable onPress = {cart} style={styles.button}>
-                    <Text>ADD TO CART</Text>
-                </Pressable>
-                <Pressable onPress = {redeemed} style={styles.button}>
-                    <Text>REDEEM NOW</Text>
-                </Pressable>
+            <View style = {styles.title_container}>
+                <Text style = {styles.title_text}>Success!</Text>
+                <Text style = {styles.subHeader}>Item placed in cart.</Text>
+                <Image source = {animated_shopping_cart} style={styles.animatedIcon}/>
             </View>
         </View>
     )
@@ -65,71 +48,22 @@ const styles = StyleSheet.create({
     //   justifyContent: 'center',
       alignContent: "center",
     },
-    backButtonContainer: {
-        width: "20%",
-        marginTop: 20,
-        backgroundColor: "#D3D3D3"
-    },
-    backButton:{
-        color: "black",
-        fontSize: 20,
-        borderWidth: 2,
-        borderColor: "#D3D3D3"
-    },
-    pointText: {
-        fontSize: 25
-    },
-    buttonTopic: {
-        fontSize: 20
-    },
-    button:{
-        borderWidth:1,
-        borderColor: "blue",
-        width: 250,
-        marginTop: 20,
-        height: 40,
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    button2:{
-        borderWidth:1,
-        borderColor: "blue",
-        width: 50,
-        marginTop: 5,
-        height: 40,
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    button3:{
-        borderWidth:1,
-        borderColor: "blue",
-        width: 55,
-        marginTop: 20,
-        marginBottom: 5,
-        marginLeft: 10,
-        paddingLeft: "2%",
-        paddingRight: "2%",
-        height: 40,
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    productImage: {
-        borderWidth: 1,
-        marginTop: 20,
-        height: 250,
-        width: 250,
-        resizeMode: "contain"
-        // padding: 50
-    },
     btn_text: {
         color: "white",
         fontSize: "22%",
         fontWeight: "bold"
     },
+    animatedIcon:{
+        // borderWidth: 2,
+        // marginTop: 600
+    },
     title_container: {
-        borderBottomWidth: 1,
-        marginBottom: 12,
-        height: "9%",
+        // borderBottomWidth: 1,
+        // marginBottom: 12,
+        marginTop: 200,
+        // borderWidth: 2,
+        // height: "9%",
+        // borderColor: "orange",
         width: "100%",
         alignItems: "center",
         justifyContent: "center",
@@ -144,10 +78,12 @@ const styles = StyleSheet.create({
     },
     title_text: {
         fontSize: "40%",
-        fontWeight: "bold"
+        fontWeight: "bold",
+        // borderWidth: 2
     },
     subHeader: {
-        fontSize: "20%"
+        fontSize: "20%",
+        // borderWidth:2
     },
     result_wait_container: {
         // borderWidth: 3,
@@ -325,9 +261,5 @@ const styles = StyleSheet.create({
         backgroundColor: "#0053BC",
         borderRadius: 7,
         // marginTop: 5
-    },
-    selectOption: {
-      //marginTop: 10,
-      width: "auto"
     },
   });

@@ -11,7 +11,7 @@ export default function Home() {
 
     const router = useRouter();
     const addTeam = () => router.push("addTeam/add_team")
-    const merch = () => router.push("merchandisePage/march_page")
+    const merch = () => router.push("home/merchandise")
 
     const teamNames = [ "Dallas Mavericks",
                         "Miami Heat"]
@@ -130,6 +130,7 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
+
     homepageContainer: {
       flex: 1,
       backgroundColor: '#fff',
