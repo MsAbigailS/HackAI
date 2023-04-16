@@ -19,6 +19,7 @@ export default function Betting() {
 
     const router = useRouter();
     // const bet_placed = () => router.push("betPlaced/bet_placed")
+    const bet_skipped = () => router.push("betSkipped/bet_skipped")
 
     bet_placed = () => {
         if(active !== false || active2 !== false){
@@ -99,6 +100,7 @@ export default function Betting() {
 
     const skipBet = () => {
         setSkipBetStatus(!skipBetStatus)
+        bet_skipped()
     }
 
 

@@ -10,6 +10,8 @@ import waiting_page_hero_image from '../images/confirmation_page_image.jpeg'
 export default function waitingPage() {
 
     const router = useRouter();
+
+    const homepage = () => router.push("home")
     
     return (
         <View style={styles.container}>
@@ -27,7 +29,9 @@ export default function waitingPage() {
                 <Text style = {styles.sub_title_text2}>Will be release shortly!</Text>
             </View>
             
-            <Text>For now, enjoy the game</Text>
+            <Pressable onPress = {homepage} style = {styles.btn_active}>
+                <Text style = {styles.btn_text}>Home</Text>
+            </Pressable>
             <Text>or</Text>
             <Pressable style = {styles.btn_active}>
                 <Text style = {styles.btn_text}>Redeem Points</Text>
