@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Text, View, StyleSheet, Image, Pressable, TextInput} from 'react-native';
+import { Text, View, StyleSheet, Image, Pressable, TextInput, FlatList } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { API_URL } from './secrets';
 
@@ -43,41 +43,43 @@ export default function Leaderboard () {
 
     else {
         return (
-            <View style="container">
-                <Text></Text>
-                <View>
-                    <Text></Text>
-                    <Text></Text>
+            <View style={styles.container}>
+            <FlatList
+                data={leaderboard}
+                keyExtractor={(item) => item.name}
+                renderItem={({ item }) => (
+                <View style={styles.itemContainer}>
+                    <Text style={styles.name}>{item[0]}</Text>
+                    <Text style={styles.score}>{item[1]}</Text>
                 </View>
-                <View>
-                    <Text></Text>
-                    <Text></Text>
-                </View>
-                <View>
-                    <Text></Text>
-                    <Text></Text>
-                </View>
-                <View>
-                    <Text></Text>
-                    <Text></Text>
-                </View>
-                <View>
-                    <Text></Text>
-                    <Text></Text>
-                </View>
-                <View>
-                    <Text></Text>
-                    <Text></Text>
-                </View>
+                )}
+            />
             </View>
-            
-        )
+        );
     }
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        
-    }
-})
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  score: {
+    fontSize: 18,
+    color: '#555',
+  },
+});
+
