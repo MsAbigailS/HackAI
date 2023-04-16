@@ -73,6 +73,7 @@
 					questions[i] = question;
 				}
 				transcription = secondData;
+				processingVoice = false;
 			} catch(e) {
 				processingVoice = false;
 			}
@@ -129,6 +130,7 @@
 			console.log('media recorder is null');
 			return;
 		}
+		questions = [];
 		console.log('starting recording...')
 		media.length = 0;
 		mediaRecorder.start()
@@ -300,7 +302,7 @@
 							{/each}
 						</article>
 					{:else if processingVoice === true}
-						<article id="question-cards" aria-busy="true" />
+						<article id="question-cards" aria-busy="true" style="justify-content: center; align-items: center;" />
 					{:else}
 						<article id="question-cards"/>
 					{/if}
