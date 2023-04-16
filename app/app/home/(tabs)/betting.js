@@ -90,7 +90,20 @@ export default function Betting() {
             }).catch((error) => {
                 setBettingPrompt('There is no active bet currently!');
             });
-        }, 1000);
+
+            const formData = new FormData();
+            formData.append('player', 'DemoPlayer');
+            fetch(API_URL + '/getCurrentPoints', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                setUserPoints(parseInt(data));
+            }).catch((error) => {
+                console.error('Error:', error);
+            });
+            }, 1000);
         
         return () => {
             clearInterval(interval);
