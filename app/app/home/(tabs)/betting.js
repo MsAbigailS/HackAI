@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView, ScrollView, StatusBar } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import { CountDownText } from 'react-native-countdown-timer-text';
-// import React, { Component } from 'react';
+import { Component } from 'react';
 import CountDown from 'react-native-countdown-component';
 // import ProgressBar from 'react-progress-bar-timer';
 import mavericksTeamImage from '../../images/dallas_mavericks_team_logo.png';
@@ -96,12 +96,7 @@ export default function Betting() {
             </View>
 
             <View style = {styles.timer_container}>
-                <CountDown
-                    until = {30}
-                    onFinish={() => alert('finished')}
-                    timeToShow = {['S']}
-                    size = {30}
-                />
+                <ProgressBarExample duration={30000} tickRate={60} />
             </View>
 
             <View style={styles.prompt_container}>
@@ -160,6 +155,36 @@ export default function Betting() {
         </View>
     )
 
+}
+
+class ProgressBarExample extends Component {
+  state = {
+    progress: 1,
+  };
+
+  componentDidMount() {
+    const { duration = 10000, tickRate = 1000 } = this.props;
+    const intervalDuration = tickRate;
+    this.interval = setInterval(() => {
+      this.setState((state) => ({
+        progress: state.progress - (tickRate / duration),
+      }));
+    }, intervalDuration);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  render() {
+    const { progress } = this.state;
+    const { color, style } = this.props;
+    return (
+      <View>
+        <ProgressBar progress={progress} color={color} style={style} />
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
