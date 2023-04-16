@@ -14,14 +14,17 @@ load_dotenv()
 
 random.seed(time.time())
 
-openai.organization = os.getenv('OPENAI_ORG')
-openai.api_key = os.getenv('OPENAI_API_KEY')
+openai.organization = os.getenv("OPENAI_ORG")
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = Flask(__name__)
 CORS(app)
 
 with open("prompt.txt") as file:
     systemPrompt = file.read()
+
+with open("prompt2.txt") as file:
+    systemPrompt2 = file.read()
 
 global pastBets
 global emptyBet
@@ -48,7 +51,7 @@ pastBets = [
         "noPlayers": 65,
         "biggestBet": 200,
         "winner": "no",
-    }
+    },
 ]
 
 emptyBet = {
@@ -73,14 +76,13 @@ players = {
     "Player3": 2400,
     "Player4": 2300,
     "Player5": 2200,
-    "DemoPlayer": 2789
-    }
+    "DemoPlayer": 2789,
+}
+
 
 def updateLeaderboard():
     global leaderBoard
     leaderBoard = sorted(players.items(), key=lambda x: x[1], reverse=True)
-
-updateLeaderboard()
 
 completeData = pd.read_csv('./finalData.csv')
 del completeData[completeData.columns[0]]
@@ -111,28 +113,33 @@ def getGameProbabilities():
     difference = currentTime - startTime
     return predictions[((difference * 2) % 2820)]
 
-@app.route('/getCurrentPoints', methods=['POST'])
+updateLeaderboard()
+
+@app.route("/getCurrentPoints", methods=["POST"])
 def getCurrentPoints():
-    player = request.form['player']
+    player = request.form["player"]
     return str(players[player])
 
-@app.route('/getCurrentBet', methods=['GET'])
+
+@app.route("/getCurrentBet", methods=["GET"])
 def getCurrentBet():
     if currentBet is None:
         return "There is no current Bet"
     else:
         return currentBet
 
-@app.route('/getPastBets', methods=['POST'])
+
+@app.route("/getPastBets", methods=["POST"])
 def getPastBets():
-    number = request.form['number']
+    number = request.form["number"]
     if number.isnumeric():
-        return pastBets[:int(number)]
+        return pastBets[: int(number)]
     return pastBets
-    
+
+
 @app.route("/setCurrentBet", methods=["POST"])
 def setCurrentBet():
-    bet = request.form['bet']
+    bet = request.form["bet"]
     global currentBet
     global emptyBet
     global allowBetting
@@ -140,7 +147,7 @@ def setCurrentBet():
         return "There is already a current bet!"
     elif bet:
         currentBet = emptyBet
-        currentBet['bet'] = bet
+        currentBet["bet"] = bet
         fillBets()
         print(currentBet)
         allowBetting = True
@@ -148,24 +155,27 @@ def setCurrentBet():
     else:
         return "Please attach the bet"
 
+
 @app.route("/setCurrentBetWinner", methods=["POST"])
-def setCurrentBetWinner(): 
+def setCurrentBetWinner():
     global currentBet
     global emptyBet
     global currentBets
-    winner = request.form['winner']
+    winner = request.form["winner"]
     if currentBet is None:
         return "There is no current Bet"
     elif winner == "yes" or winner == "no":
         currentBet["winner"] = winner
         pastBets.insert(0, currentBet)
         print(currentBets)
-        totalPoints = currentBet['yesPoints'] + currentBet['noPoints']
+        totalPoints = currentBet["yesPoints"] + currentBet["noPoints"]
         for player, key in currentBets.items():
             if key[0] == winner:
                 print(player)
-                percentageBet = key[1] / currentBet['yesPoints']
-                players[player] = players[player] + math.ceil(totalPoints * percentageBet)
+                percentageBet = key[1] / currentBet["yesPoints"]
+                players[player] = players[player] + math.ceil(
+                    totalPoints * percentageBet
+                )
         updateLeaderboard()
         currentBet = None
         currentBets = {}
@@ -182,12 +192,13 @@ def setCurrentBetWinner():
         return "Success"
     else:
         return "Winner was not side1 or side2"
-    
-@app.route("/setBetChoice", methods=['POST'])
+
+
+@app.route("/setBetChoice", methods=["POST"])
 def setBetChoice():
-    choice = request.form['choice']
-    player = request.form['player']
-    amount = int(request.form['amount'])
+    choice = request.form["choice"]
+    player = request.form["player"]
+    amount = int(request.form["amount"])
     if currentBet is None:
         return "There is no current Bet"
     if not allowBetting:
@@ -199,23 +210,24 @@ def setBetChoice():
             if choice == "yes" or choice == "no":
                 players[player] = players[player] - amount
                 currentBets[player] = (choice, amount)
-                if amount > currentBet['biggestBet']:
-                    currentBet['biggestBet'] = amount
+                if amount > currentBet["biggestBet"]:
+                    currentBet["biggestBet"] = amount
                 if choice == "yes":
-                    currentBet['yesPoints'] = currentBet['yesPoints'] + amount
-                    currentBet['yesPlayers'] = currentBet['yesPlayers'] + 1
+                    currentBet["yesPoints"] = currentBet["yesPoints"] + amount
+                    currentBet["yesPlayers"] = currentBet["yesPlayers"] + 1
                 else:
-                    currentBet['noPoints'] = currentBet['noPoints'] + amount
-                    currentBet['noPlayers'] = currentBet['noPlayers'] + 1
+                    currentBet["noPoints"] = currentBet["noPoints"] + amount
+                    currentBet["noPlayers"] = currentBet["noPlayers"] + 1
                 print(players[player])
                 print(currentBet)
                 return str(players[player])
             else:
                 return "Not a valid choice for player"
-    else: 
+    else:
         return "Missing Form Values"
-    
-@app.route('/cancelBet', methods=['GET'])
+
+
+@app.route("/cancelBet", methods=["GET"])
 def cancelBet():
     global currentBets
     global currentBet
@@ -235,51 +247,65 @@ def cancelBet():
     }
     return "Success"
 
-@app.route('/disableBetting', methods=['GET'])
+
+@app.route("/disableBetting", methods=["GET"])
 def disableBetting():
     global allowBetting
     allowBetting = False
     return "Betting set to False"
 
-@app.route('/transcription', methods=['POST'])
+
+@app.route("/transcription", methods=["POST"])
 def upload_file():
-    file = request.files['file']
+    file = request.files["file"]
     print(file.filename)
     if file:
         filename = file.filename
         file.save(filename)
-        audio_file = open(filename, 'rb')
+        audio_file = open(filename, "rb")
         transcript = openai.Audio.transcribe("whisper-1", audio_file)
-        return transcript['text']
+        return transcript["text"]
     else:
         return "Invalid file type."
 
-@app.route("/getQuestions", methods=['POST'])
+
+@app.route("/getQuestions", methods=["POST"])
 def getQuestions():
-    transcript = request.form['transcript']
-    answer = prompt_chatbot_for_bets(transcript)['content']
+    transcript = request.form["transcript"]
+    answer = prompt_chatbot_for_bets(transcript)["content"]
     print(answer)
     return answer
 
-@app.route("/buyItem", methods=['POST'])
+
+@app.route("/ask", methods=["POST"])
+def getQNA():
+    question = request.form["question"]
+    answer = prompt_chatbot_for_answers(question)["content"]
+    print(answer)
+    return answer
+
+
+@app.route("/buyItem", methods=["POST"])
 def buyItem():
-    player = request.form['player']
-    itemAmount = request.form['itemAmount']
+    player = request.form["player"]
+    itemAmount = request.form["itemAmount"]
 
     if players[player] < itemAmount:
         return "Not enough for item"
     else:
         players[player] = players[player] - itemAmount
         return "Success"
-    
+
+
 @app.route("/getLeaderboard", methods=["GET"])
 def getLeaderboard():
     return leaderBoard
 
+
 @app.route("/getUserLeaderboard", methods=["POST"])
 def getUserLeaderboard():
-    player = request.form['player']
-    return str([i for i,v in enumerate(leaderBoard) if player in v[0]][0])
+    player = request.form["player"]
+    return str([i for i, v in enumerate(leaderBoard) if player in v[0]][0])
 
 
 def prompt_chatbot_for_bets(prompt):
@@ -287,13 +313,28 @@ def prompt_chatbot_for_bets(prompt):
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": systemPrompt},
-            {"role": "user", "content": prompt}
+            {"role": "user", "content": prompt},
         ],
         max_tokens=200,
         temperature=0.7,
         top_p=1,
     )
     return completion.choices[0].message
+
+
+def prompt_chatbot_for_answers(prompt):
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": systemPrompt2},
+            {"role": "user", "content": prompt},
+        ],
+        max_tokens=300,
+        temperature=0.7,
+        top_p=1,
+    )
+    return completion.choices[0].message
+
 
 def fillBets():
     for key in set(players) - set([ourPlayer]):
@@ -305,9 +346,9 @@ def fillBets():
             currentBet["biggestBet"] = value
         if random.randint(0, 100) < 50:
             currentBets[key] = ("yes", value)
-            currentBet['yesPoints'] = currentBet['yesPoints'] + value
-            currentBet['yesPlayers'] = currentBet['yesPlayers'] + 1
+            currentBet["yesPoints"] = currentBet["yesPoints"] + value
+            currentBet["yesPlayers"] = currentBet["yesPlayers"] + 1
         else:
             currentBets[key] = ("no", value)
-            currentBet['noPoints'] = currentBet['noPoints'] + value
-            currentBet['noPlayers'] = currentBet['noPlayers'] + 1
+            currentBet["noPoints"] = currentBet["noPoints"] + value
+            currentBet["noPlayers"] = currentBet["noPlayers"] + 1
