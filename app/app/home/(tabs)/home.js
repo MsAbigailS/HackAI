@@ -8,6 +8,7 @@ import heroImage from '../../images/basketball_hero_image.jpg'
 export default function Home() {
 
     const router = useRouter();
+    const addTeam = () => router.push("addTeam/add_team")
 
     const teamNames = [ "Dallas Mavericks",
                         "Miami Heat"]
@@ -79,7 +80,7 @@ export default function Home() {
             </View>
             
             <View style={styles.add_team_container}>
-                <Pressable style = {styles.add_button}>
+                <Pressable onPress = {addTeam} style = {styles.add_button}>
                     <Text>Add Team +</Text>
                 </Pressable>
             </View>
@@ -101,14 +102,15 @@ const styles = StyleSheet.create({
     },
     header1: {
         // borderWidth: 2,
-        fontSize: "25%"
+        fontSize: "25%",
+        paddingTop: 15
     },
     header2: {
         fontSize: "45%"
     },
     subhead: {
         fontSize: "20%",
-        // borderWidth: 2,
+        // borderTopWidth: 2,
         width: "100%",
         paddingLeft: 5,
         marginTop: 10
@@ -118,10 +120,12 @@ const styles = StyleSheet.create({
         // borderWidth: 2,
         width: "100%",
         paddingLeft: 5,
-        marginTop: 50
+        marginTop: 50,
+        borderWidth: 2
     },
     header3: {
-        fontSize: "25%"
+        fontSize: "25%",
+        paddingTop: 5
     },
     hello_title: {
         // borderWidth: 1,
@@ -135,7 +139,8 @@ const styles = StyleSheet.create({
         width: "100%"
     },
     hello_userpoints: {
-        // borderWidth: 1,
+        borderBottomWidth: 1,
+        paddingBottom: 15,
         alignItems: "center",
         width: "100%"
     },

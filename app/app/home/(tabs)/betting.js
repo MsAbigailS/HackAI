@@ -5,7 +5,7 @@ import { SafeAreaView, ScrollView, StatusBar } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import { CountDownText } from 'react-native-countdown-timer-text';
 // import React, { Component } from 'react';
-// import CountDown from 'react-native-countdown-component';
+import CountDown from 'react-native-countdown-component';
 // import ProgressBar from 'react-progress-bar-timer';
 import mavericksTeamImage from '../../images/dallas_mavericks_team_logo.png';
 import miamiHeatImage from '../../images/miami_heat_team_logo.png';
@@ -31,22 +31,6 @@ export default function Betting() {
         } else {
             Alert.alert('You haven\'t placed a bet!', 'Select \'Yes\' or \'No\'')
         }
-    }
-
-    onLoad = async () => {
-        await wait(1000);
-        setStatus(status - 0.1)
-        
-        // alert("AHHHH")
-        // waitingPage();
-    }
-
-    useEffect(() => {
-        onLoad();
-    }, [])
-
-    async function wait(milleseconds) {
-        await new Promise(resolve => setTimeout(resolve, milleseconds));
     }
     
 
@@ -112,19 +96,12 @@ export default function Betting() {
             </View>
 
             <View style = {styles.timer_container}>
-                <View style = {styles.time_text_container}>
-                    <CountDownText
-                        countType='seconds'
-                        auto={true}
-                        afterEnd={() => {}}
-                        timeLeft={maxTime_seconds}
-                        step={-1}
-                        startText='Start'
-                        endText='Times Up!'
-                        intervalText={(sec) => sec + ' seconds remaining'}
-                    />
-                </View>
-                <ProgressBar progress = {status} color = {"#0053bc"} style={styles.progress_bar}/>
+                <CountDown
+                    until = {30}
+                    onFinish={() => alert('finished')}
+                    timeToShow = {['S']}
+                    size = {30}
+                />
             </View>
 
             <View style={styles.prompt_container}>
@@ -175,7 +152,7 @@ export default function Betting() {
 
             <View style = {styles.not_placing_bet_container}>
                 <Pressable
-                        onPress = {skipBet}
+                        onPress = {bet_skipped}
                         style = {skipBetStatus ? styles.skip_bet_button_active : styles.skip_bet_button_inactive}>
                         <Text style={styles.place_bet_text}>Skip Bet</Text>
                 </Pressable>
@@ -214,9 +191,9 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     timer_container: {
-        // borderWidth: 1,
+        borderWidth: 1,
         width: "90%",
-        height: 52,
+        height: 90,
         // alignItems: "center", // DO NOT USE IT GO CRAZY
         justifyContent: "center",
         paddingLeft: 12,
