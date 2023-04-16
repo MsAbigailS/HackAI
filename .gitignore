@@ -1,5 +1,15 @@
 secrets.py
 .venv
 __pycache__
+backend/audio.mp3
+backend/audio.wav
+backend/.env
+backend/secret.py
+backend/pbp.csv
+backend/main.ipynb
+backend/test.csv
+backend/finalData.csv
+backend/data.csv
 node_modules
 secrets.js
+backend/model/*
