@@ -26,11 +26,15 @@ export default function Betting() {
     const bet_skipped = () => router.push("betSkipped/bet_skipped")
 
     bet_placed = async () => {
+        if(bettingPrompt === 'There is no active bet currently!') {
+            Alert.alert('There is no active bet currently!', 'Please check back later!')
+            return;
+        }
         if(active !== false || active2 !== false){
             if(betValue > 0){
                 console.log('bet placed3!');
                 placeBetAPICall(betValue);
-                await new Promise(r => setTimeout(r, 1000));
+                await new Promise(r => setTimeout(r, 100));
                 router.push("betPlaced/bet_placed")
             } else {
                 Alert.alert('Bets must be greater than 0 points and less than your current available points.', 'Please enter a valid betting amount and try again!')

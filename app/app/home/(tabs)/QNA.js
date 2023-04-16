@@ -1,18 +1,19 @@
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Image, Pressable, TextInput, Button, KeyboardAvoidingView, Platform, ActivityIndicator, ImageBackground } from 'react-native';
+import { Text, View, StyleSheet, Image, Pressable, TextInput, Button, KeyboardAvoidingView, Platform, ActivityIndicator, ImageBackground, Keyboard } from 'react-native';
 import mavericksTeamImage from '../../images/dallas_mavericks_team_logo.png';
 import miamiHeatImage from '../../images/miami_heat_team_logo.png';
 import profile_picture from '../../images/profile_picture.png'
 import heroImage from '../../images/basketball_hero_image.jpg'
 import { API_URL } from './secrets';
 
-export default function QuestionAnswer() {
+export default function QNA() {
   const [question, setQuestion] = useState('Here is an example question!');
   const [answer, setAnswer] = useState('This is where the answer will be!');
   const [loading, setLoading] = useState(false);
 
   const handleAskQuestion = async () => {
+    Keyboard.dismiss();
     setLoading(true);
     try {
         // Call your API here with the question and update the answer state with the response
