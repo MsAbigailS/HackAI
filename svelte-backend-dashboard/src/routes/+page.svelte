@@ -12,7 +12,21 @@
 	let progressValue = 0;
 	let progressTick = 60;
 	let interval: number;
-	let leaderboardTimer: number;
+	let processingVoice = false;
+
+	let leaderboardData: any[] = [];
+
+	interface Bet {
+		bet: string;
+		biggestBet: number;
+		noPlayers: number;
+		noPoints: number;
+		winner: string;
+		yesPlayers: number;
+		yesPoints: number;
+	}	
+	let pastBetData: Bet[] = [];
+
 
 	onMount(async () => {
 		const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -22,61 +36,79 @@
 		mediaRecorder.ondataavailable = (e: any) => media.push(e.data)
 
 		mediaRecorder.onstop = async function(){
-			const blob = new Blob(media, {
-				'type': 'audio/wav'
+			processingVoice = true;
+			try {
+				const blob = new Blob(media, {
+					'type': 'audio/wav'
+					});
+				media = []
+				let audio = window.URL.createObjectURL(blob);
+				const arrayBuffer = await blob.arrayBuffer();
+				const audioContext = new AudioContext();
+				const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+				const wavBuffer = toWav(audioBuffer);
+				const wavBlob = new Blob([wavBuffer], { type: 'audio/wav' });
+				const formData = new FormData();
+				formData.append('file', wavBlob, 'audio.wav');
+				console.log('sending request to: ' + `${url}/transcription`);
+				const response = await fetch(`${url}/transcription`, {
+					method: 'POST',
+					body: formData
 				});
-			media = []
-			let audio = window.URL.createObjectURL(blob);
-			const arrayBuffer = await blob.arrayBuffer();
-			const audioContext = new AudioContext();
-			const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-			const wavBuffer = toWav(audioBuffer);
-			const wavBlob = new Blob([wavBuffer], { type: 'audio/wav' });
-			const formData = new FormData();
-			formData.append('file', wavBlob, 'audio.wav');
-			console.log('sending request to: ' + `${url}/transcription`);
-			const response = await fetch(`${url}/transcription`, {
-				method: 'POST',
-				body: formData
-			});
-			console.log(response);
-			const data = await response.text();
-			console.log('transcription response: ' + data);
-			// do a POST request to /getQuestions with the form body: transcript = transcript
-			const secondFormData = new FormData();
-			secondFormData.append('transcript', data);
-			const secondResponse = await fetch(`${url}/getQuestions`, {
-				method: 'POST',
-				body: secondFormData
-			});
-			console.log(secondResponse);
-			const secondData = await secondResponse.json();
-			for(let i = 0; i < secondData.length; i++) {
-				const question = secondData[i];
-				console.log(question);
-				questions[i] = question;
+				console.log(response);
+				const data = await response.text();
+				console.log('transcription response: ' + data);
+				// do a POST request to /getQuestions with the form body: transcript = transcript
+				const secondFormData = new FormData();
+				secondFormData.append('transcript', data);
+				const secondResponse = await fetch(`${url}/getQuestions`, {
+					method: 'POST',
+					body: secondFormData
+				});
+				console.log(secondResponse);
+				const secondData = await secondResponse.json();
+				for(let i = 0; i < secondData.length; i++) {
+					const question = secondData[i];
+					console.log(question);
+					questions[i] = question;
+				}
+				transcription = secondData;
+			} catch(e) {
+				processingVoice = false;
 			}
-			transcription = secondData;
 		} // end of event listeners
 
-		// TODO: uncomment this when the backend is ready
-		// set interval for leaderboard / past bets
-		leaderboardTimer = setInterval(async () => {
-			const formData = new FormData();
-			formData.append('number', '5');
-			const response = await fetch(`${url}/getPastBets`, {
-				method: 'POST',
-				body: formData
-			});
-			const data = await response.text();
-			console.log(data);
-			// do a GET request to /getLeaderboard
-			const leaderboardResponse = await fetch(`${url}/getLeaderboard`);
-			const leaderboardData = await leaderboardResponse.text();	
-			console.log(leaderboardData);
-		}, 10 * 1000);
+		while(true) {
+			console.log('trying to get leaderboard and past bets');
+			try {
+				getLeaderboardAndPastBets();
+				break;
+			} catch(e) {
+				console.log(e);
+			}
+			await new Promise(resolve => setTimeout(resolve, 1000));
+		}
 
 	});  // end of onmount
+
+	async function getLeaderboardAndPastBets() {
+		// do a POST request to /getPastBets
+		const formData = new FormData();
+		formData.append('number', '10');
+		const response = await fetch(`${url}/getPastBets`, {
+			method: 'POST',
+			body: formData
+		});
+		// console.log(await response.text())
+		pastBetData = await response.json();
+		console.log(pastBetData);
+
+		// do a GET request to /getLeaderboard
+		const leaderboardResponse = await fetch(`${url}/getLeaderboard`);
+		// console.log(await leaderboardResponse.text())
+		leaderboardData = await leaderboardResponse.json();
+		console.log(leaderboardData);
+	}
 
 	async function handleRecording() {
 		if(!mediaRecorder) {
@@ -84,8 +116,10 @@
 			return;
 		}
 		if (mediaRecorder.state === 'inactive') {
+			recordingText = 'Stop Recording';
 			startRecording();
 		} else {
+			recordingText = 'Press to Record';
 			stopRecording();
 		}
 	}
@@ -110,6 +144,9 @@
 	}
 
 	async function questionClicked(event: { target: any }) {
+		if(progressValue > 0) {
+			return;
+		}
 		// question id will be in the form "question_0"
 		// need to split to get the index
 		const questionId = event.target.id;
@@ -190,6 +227,7 @@
 		});
 		console.log(await response.text());
 		await clearObjects();
+		await getLeaderboardAndPastBets();
 	}
 
 	async function noButtonClicked() {
@@ -202,6 +240,7 @@
 		});
 		console.log(await response.text());
 		await clearObjects();
+		await getLeaderboardAndPastBets();
 	}
 
 	let transcription: undefined | string = undefined;
@@ -219,6 +258,7 @@
 	}
 
 	let currentBetObject: undefined | BetObject = undefined;
+	let recordingText = 'Press to Record'
 </script>
 
 <svelte:head>
@@ -259,12 +299,13 @@
 								{/if}
 							{/each}
 						</article>
+					{:else if processingVoice === true}
+						<article id="question-cards" aria-busy="true" />
 					{:else}
-						<article id="question-cards">
-						</article>
+						<article id="question-cards"/>
 					{/if}
 					<div id="audio-controls-buttons">
-						<button id="record-button" on:click={handleRecording}>Record</button>
+						<button id="record-button" on:click={handleRecording}>{recordingText}</button>
 					</div>
 				</div>
 			</div>
@@ -301,7 +342,10 @@
 							<button id="big-cancel-button" on:click={cancelButtonClicked}>Cancel the current bet</button>
 						{/if}
 					{:else}
-						<h6>It looks like there isn't a current bet. Start one now!</h6>
+						<div class='headings'>
+							<div />
+							<h6>It looks like there isn't a current bet. Start one now!</h6>
+						</div>
 					{/if}
 				</article>
 			</div>
@@ -312,23 +356,45 @@
 			<div class="halfsection">
 				<h2>Past Bets</h2>
 				<div id="pastbet-cards">
-					<article id="pastbet-card">Here is one bet!</article>
-					<article id="pastbet-card">Here is a second bet!</article>
-					<article id="pastbet-card">Here is one bet!</article>
-					<article id="pastbet-card">Here is one bet!</article>
-					<article id="pastbet-card">Here is a second bet!</article>
-					<article id="pastbet-card">Here is a second bet!</article>
+					{#each pastBetData as bet, index}
+						{#if index === 0}
+							<article>
+								{bet.bet}
+								<hr>
+								Winner: {bet.winner}, Biggest Bet: {bet.biggestBet}
+							</article>
+						{:else}
+							<article style="margin-top: 0;">
+								{bet.bet}
+								<hr>
+								Winner: {bet.winner}, Biggest Bet: {bet.biggestBet}
+							</article>
+						{/if}
+					{/each}
 				</div>
 			</div>
 			<div class="halfsection">
 				<h2>Leaderboard</h2>
 				<div id="leaderboard-cards">
 					<article id="leaderboard-card">
-						Here is one person!
+						<!-- Here is one person!
 						<hr>
 						Here is another person!
 						<hr>
-						And another!
+						And another! -->
+
+						{#each leaderboardData as person, index}
+							{#if index === 0}
+								{person[0]}
+								<br>	
+								{person[1]} points
+							{:else}
+								<hr>
+								{person[0]}
+								<br>	
+								{person[1]} points
+							{/if}
+						{/each}
 					</article>
 				</div>
 			</div>
@@ -456,6 +522,12 @@
 
 	#past-bet-screen {
 		background-color: aliceblue;
+		
+		// set the background image just like the home screen
+		background-image: linear-gradient(rgba(240, 248, 255, 0.9), rgba(240, 248, 255, 0.9)), url("blue_basketball_mural_style.jpg");
+		background-position: center center;
+		background-repeat: no-repeat;
+		background-size: 32%;
 	}
 
 	#homescreen {
@@ -613,6 +685,10 @@
 
 	#record-button {
 		height: 80px;
+	}
+
+	h3 {
+		margin-bottom: 0;
 	}
 
 </style>
