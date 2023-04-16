@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Image, Pressable, TextInput, Button, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import { Text, View, StyleSheet, Image, Pressable, TextInput, Button, KeyboardAvoidingView, Platform, ActivityIndicator, ImageBackground } from 'react-native';
 import mavericksTeamImage from '../../images/dallas_mavericks_team_logo.png';
 import miamiHeatImage from '../../images/miami_heat_team_logo.png';
 import profile_picture from '../../images/profile_picture.png'
@@ -9,7 +9,7 @@ import { API_URL } from './secrets';
 
 export default function QuestionAnswer() {
   const [question, setQuestion] = useState('Here is an example question!');
-  const [answer, setAnswer] = useState('Here is where the answer will be!');
+  const [answer, setAnswer] = useState('This is where the answer will be!');
   const [loading, setLoading] = useState(false);
 
   const handleAskQuestion = async () => {
