@@ -1,9 +1,10 @@
-from flask import Flask, request
+from flask import Flask, request, redirect, url_for
 from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 import openai
 import os
 import math
+import random
 load_dotenv()
 
 openai.organization = os.getenv('OPENAI_ORG')
@@ -14,6 +15,13 @@ CORS(app)
 
 with open("prompt.txt") as file:
     systemPrompt = file.read()
+
+global pastBets
+global emptyBet
+global ourPlayer
+global currentBet
+global currentBets
+global players
 
 pastBets = [
     {
@@ -46,8 +54,11 @@ emptyBet = {
     "winner": None,
 }
 
+ourPlayer = "DemoPlayer"
+
 currentBet = None
 currentBets = {}
+allowBetting = False
 
 players = {
     "Player1": 2600,
@@ -86,16 +97,20 @@ def getPastBets():
 @app.route("/setCurrentBet", methods=["POST"])
 def setCurrentBet():
     bet = request.form['bet']
+    global currentBet
+    global emptyBet
     if currentBet is not None:
         return "There is already a current bet!"
     elif bet:
         currentBet = emptyBet
         currentBet['bet'] = bet
-        return "Success"
+        fillBets()
+        print(currentBet)
+        allowBetting = True
+        return redirect(url_for('getCurrentBet'))
     else:
         return "Please attach the bet"
 
-## TODO
 @app.route("/setCurrentBetWinner", methods=["POST"])
 def setCurrentBetWinner(): 
     winner = request.form['winner']
@@ -108,7 +123,7 @@ def setCurrentBetWinner():
         for player, key in currentBets.items():
             if key[0] == winner:
                 percentageBet = key[1] / currentBet['yesPoints']
-                players[player] = players[player] + (totalPoints * percentageBet)
+                players[player] = players[player] + math.ceil(totalPoints * percentageBet)
         updateLeaderboard()
         currentBet = None
         currentBets = {}
@@ -143,6 +158,18 @@ def setBetChoice():
                 return "Not a valid choice for player"
     else: 
         return "Missing Form Values"
+    
+@app.route('/cancelBet', methods=['GET'])
+def cancelBet():
+    for key, item in currentBets.items():
+        players[key] = players[key] + item[1]
+    currentBet = None
+    return "Success"
+
+@app.route('/disableBetting', methods=['GET'])
+def disableBetting():
+    allowBetting = False
+    return "Betting set to False"
 
 @app.route('/transcription', methods=['POST'])
 def upload_file():
@@ -161,7 +188,19 @@ def upload_file():
 def getQuestions():
     transcript = request.form['transcript']
     answer = prompt_chatbot_for_bets(transcript)['content']
+    print(answer)
     return answer
+
+@app.route("/buyItem", methods=['POST'])
+def buyItem():
+    player = request.form['player']
+    itemAmount = request.form['itemAmount']
+
+    if players[player] < itemAmount:
+        return "Not enough for item"
+    else:
+        players[player] = players[player] - itemAmount
+        return "Success"
 
 
 def prompt_chatbot_for_bets(prompt):
@@ -176,3 +215,19 @@ def prompt_chatbot_for_bets(prompt):
         top_p=1,
     )
     return completion.choices[0].message
+
+def fillBets():
+    for key in set(players) - set([ourPlayer]):
+        value = random.randint(0, math.ceil(players[key] / 3))
+        if value == 0:
+            continue
+        if value > currentBet["biggestBet"]:
+            currentBet["biggestBet"] = value
+        if random.randint(0, 1) == 1:
+            currentBets[key] = ("yes", value)
+            currentBet['yesPoints'] = currentBet['yesPoints'] + value
+            currentBet['yesPlayers'] = currentBet['yesPlayers'] + 1
+        else:
+            currentBets[key] = ("no", value)
+            currentBet['noPoints'] = currentBet['noPoints'] + value
+            currentBet['noPlayers'] = currentBet['noPlayers'] + 1

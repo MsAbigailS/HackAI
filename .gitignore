@@ -4,3 +4,6 @@ __pycache__
 backend/audio.mp3
 backend/audio.wav
 backend/.env
+backend/secret.py
+backend/pbp.csv
+backend/main.ipynb

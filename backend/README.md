@@ -63,6 +63,12 @@ Will return 1 of 5 results:
 - "Not a valid choice for player"
 - "Missing Form Values"
 
+### Disable Betting
+GET
+`/disableBetting`
+No Body
+Will disallow betting
+
 ### Making a Transcription
 POST
 `/transcription`
