@@ -7,3 +7,6 @@ backend/.env
 backend/secret.py
 backend/pbp.csv
 backend/main.ipynb
+backend/test.csv
+backend/finalData.csv
+backend/data.csv

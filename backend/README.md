@@ -41,13 +41,13 @@ Will return 1 of 3 results:
 
 ### Set Current Bet Winner
 POST
-`/SetCurrentBetWinner`
+`/setCurrentBetWinner`
 Form body:
-winner = "side1" or "side2"
+winner = "yes" or "no"
 Will return 1 of 3 results:
 - "There is no current bet"
 - "Success"
-- "Winner was not side1 or side2"
+- "Winner was not yes or no"
 
 ### Set Bet Choice
 POST
@@ -63,7 +63,7 @@ Will return 1 of 5 results:
 - "Not a valid choice for player"
 - "Missing Form Values"
 
-### Cencel Betting
+### Cancel Betting
 GET
 `/cancelBet`
 No body
