@@ -26,7 +26,6 @@ export default function Betting() {
         if(active !== false || active2 !== false){
             if(betValue > 0){
                 console.log('bet placed3!');
-                // TODO: place the bet
                 placeBetAPICall(betValue);
                 await new Promise(r => setTimeout(r, 1000));
                 router.push("betPlaced/bet_placed")
@@ -50,7 +49,7 @@ export default function Betting() {
         })
         .then(response => response.text())
         .then(data => {
-            // setUserPoints(parseInt(data));
+            console.log(data);
         }
         ).catch((error) => {
             console.error('Error:', error);
@@ -102,9 +101,9 @@ export default function Betting() {
                         "6:30 PM"]
 
     // const userPoints = 500
-    const [userPoints, setUserPoints] = useState(500)
+    const [userPoints, setUserPoints] = useState(0)
 
-    const [bettingPrompt, setBettingPrompt] = useState("Will Dwight Powell make the shot xoxo?")
+    const [bettingPrompt, setBettingPrompt] = useState('There is no active bet currently!')
 
 
     const [betValue, setBetValue] = useState(0)

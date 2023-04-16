@@ -21,7 +21,7 @@ export default function Home() {
     const matchTimes = ["5:00 PM",
                         "6:30 PM"]
 
-    const [userPoints, setUserPoints] = useState(500);
+    const [userPoints, setUserPoints] = useState(0);
     const [userName, setUserName] = useState("John Doe");
 
     useEffect(() => {
