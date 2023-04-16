@@ -1,7 +1,12 @@
 import { useRouter } from 'expo-router';
 import { Text, View, StyleSheet, Image, Pressable, TextInput } from 'react-native';
-import React, { useState } from 'react';
-import CountDown from 'react-native-countdown-component';
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, ScrollView, StatusBar } from 'react-native';
+import { ProgressBar } from 'react-native-paper';
+import { CountDownText } from 'react-native-countdown-timer-text';
+// import React, { Component } from 'react';
+// import CountDown from 'react-native-countdown-component';
+// import ProgressBar from 'react-progress-bar-timer';
 import mavericksTeamImage from '../../images/dallas_mavericks_team_logo.png';
 import miamiHeatImage from '../../images/miami_heat_team_logo.png';
 import bettingImage from '../../images/betting_image.svg';
@@ -25,13 +30,13 @@ export default function Betting() {
 
     const userPoints = 500
 
-    var active_btn = {
-        backgroundColor: "orange"
-    }
+    const bettingPrompt = "Will Dwight Powell make the shot xoxo?"
+
 
     const [betValue, setBetValue] = useState(0)
 
-    const [active, setActive] = useState(false);
+    const [active, setActive] = useState(true);
+    const [active2, setActive2] = useState(false);
 
     const validateBettingAmount = () => {
         if(betValue > userPoints){
@@ -40,25 +45,56 @@ export default function Betting() {
         }
     }
 
+    const maxTime_seconds = 120
+    var remaining_time_seconds = 45
+    const [status, setStatus] = useState(0.75);
+    const [placeBetStatus, setPlaceBetStatus] = useState(false)
+    const [skipBetStatus, setSkipBetStatus] = useState(false)
+
     const handleClick = () => {
         setActive(!active);
+        setActive2(false)
     }
+
+    const otherClick = () => {
+        setActive2(!active2);
+        setActive(false)
+    }
+
+    const placeBet = () => {
+        setPlaceBetStatus(!placeBetStatus)
+    }
+
+    const skipBet = () => {
+        setSkipBetStatus(!skipBetStatus)
+    }
+
 
     return (
         <View style={styles.container}>
             {/* Hero Image */}
             <View>
-                <Image source = {betting_top_image_1} style={styles.hero_image}/>
+                <Image source = {betting_top_image_2} style={styles.hero_image}/>
+            </View>
+
+            <View style = {styles.timer_container}>
+                <View style = {styles.time_text_container}>
+                    <CountDownText
+                        countType='seconds'
+                        auto={true}
+                        afterEnd={() => {}}
+                        timeLeft={maxTime_seconds}
+                        step={-1}
+                        startText='Start'
+                        endText='Times Up!'
+                        intervalText={(sec) => sec + ' seconds remaining'}
+                    />
+                </View>
+                <ProgressBar progress = {status} color = {"#0053bc"} style={styles.progress_bar}/>
             </View>
 
             <View style={styles.prompt_container}>
-                <Text style = {styles.prompt}>Will Dwight Powell make the shot?</Text>
-            </View>
-            <View style = {styles.timer_container}>
-                <CountDown
-                    until = {100}
-                    timeToShow={['M', 'S']}
-                />
+                <Text style = {styles.prompt}>{bettingPrompt}</Text>
             </View>
 
             <Text>Make Your Bet!</Text>
@@ -72,13 +108,12 @@ export default function Betting() {
                     onChangeText={(betValue) => {setBetValue(betValue)}}
                     onSubmitEditing={(betValue) => validateBettingAmount(betValue)}
                     value={betValue}
-                    returnKeyType='done'>
+                    returnKeyType='done'
+                    textAlign={'center'}
+                    fontSize={'50'}>
                 </TextInput>
-                <Text>
-                    /
-                </Text>
                 <Text style={styles.user_points_avail}>
-                    {userPoints} available points
+                    of {userPoints} available points
                 </Text>
             </View>
 
@@ -87,16 +122,29 @@ export default function Betting() {
                 <Pressable
                     onPress = {handleClick}
                     style = {active ? styles.btn_active : styles.btn_inactive}>
-                    <Text>Yes</Text>
+                    <Text style = {active ? styles.betting_button_text : styles.betting_button_text_false}>Yes</Text>
                 </Pressable>
                 <Pressable
-                    onPress = {handleClick}
-                    style = {active ? styles.btn_active : styles.btn_inactive}>
-                    <Text>No</Text>
+                    onPress = {otherClick}
+                    style = {active2 ? styles.btn_active : styles.btn_inactive}>
+                    <Text style = {active2 ? styles.betting_button_text : styles.betting_button_text_false}>No</Text>
                 </Pressable>
             </View>
+
+            <Pressable
+                    onPress = {placeBet}
+                    style = {placeBetStatus ? styles.place_bet_button_inactive : styles.place_bet_button_active}>
+                    <Text style={styles.place_bet_text}>Place Bet</Text>
+            </Pressable>
+
+            <Text>or</Text>
+
             <View style = {styles.not_placing_bet_container}>
-                <Text>Skip Bet</Text>
+                <Pressable
+                        onPress = {skipBet}
+                        style = {skipBetStatus ? styles.skip_bet_button_active : styles.skip_bet_button_inactive}>
+                        <Text style={styles.place_bet_text}>Skip Bet</Text>
+                </Pressable>
             </View>
         </View>
     )
@@ -109,29 +157,41 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
       alignItems: 'center',
     //   justifyContent: 'center',
-      alignItems: "center",
+      alignContent: "center",
     },
     prompt_container: {
         borderWidth: 2,
-        borderColor: "red",
+        borderRadius: 5,
+        borderColor: "rgba(2, 0, 15, 0.10)",
         width: "95%",
-        height: "15%",
+        height: "13%",
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        alignContent: "center",
+        marginTop: 11,
+
     },
     prompt: {
-        borderWidth: 2,
+        // borderWidth: 2,
         borderColor: "blue",
-        fontSize: "30%"
+        fontSize: "30%",
+        // borderWidth: 2,
+        width: "100%",
+        alignItems: "center"
     },
     timer_container: {
-        borderWidth: 1,
-        width: "50%"
+        // borderWidth: 1,
+        width: "90%",
+        height: 52,
+        // alignItems: "center", // DO NOT USE IT GO CRAZY
+        justifyContent: "center",
+        paddingLeft: 12,
+        paddingTop: 20
     },
     not_placing_bet_container: {
-        borderWidth: 1,
+        // borderWidth: 1,
         borderColor: "orange",
-        width: "75%",
+        width: "100%",
         height: "5%",
         justifyContent: "center",
         alignItems: "center",
@@ -140,7 +200,8 @@ const styles = StyleSheet.create({
     },
     betting_buttons_container: {
         width: "95%",
-        borderWidth: 2,
+        height: "15%",
+        // borderWidth: 2,
         alignItems: "center",
         borderColor: "purple",
         flexDirection: "row",
@@ -152,16 +213,20 @@ const styles = StyleSheet.create({
     btn_active: {
         backgroundColor: "#0053BC",
         margin: 5,
-        borderWidth: 1,
+        height: "50%",
+        // borderWidth: 1,
+        borderRadius: 5,
         width: "45%",
         alignItems: "center",
         alignContent: "center",
         justifyContent: "center",
     },
     btn_inactive: {
-        backgroundColor: "#d0d9dd",
+        backgroundColor: "rgba(0, 82, 189, 0.10)",
         margin: 5,
-        borderWidth: 1,
+        // borderWidth: 1,
+        borderRadius: 5,
+        height: "50%",
         width: "45%",
         alignItems: "center",
         alignContent: "center",
@@ -169,26 +234,94 @@ const styles = StyleSheet.create({
     },
     betting_amt_container:{
         width: "95%",
-        flexDirection: "row",
+        // flexDirection: "row",
         alignItems: "center",
         alignContent: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        height: "9%",
+        // borderWidth: 1,
+        borderColor: "orange"
     },
     user_input: {
-        borderWidth: 2,
-        width: "25%",
-        height: 30,
+        // borderWidth: 1,
+        width: "75%",
+        height: "80%",
+        borderColor: "blue"
     },
     user_points_avail: {
-        borderWidth: 1,
+        // borderWidth: 1,
         borderColor: "purple"
     },
     hero_image:{
         width: 800,
         height: 300,
-        borderWidth: 3,
-        borderColor: "red"
-    }
+    },
+    betting_button_text: {
+        color: "white",
+        fontWeight: "bold",
+        fontSize: "45%"
+    },
+    betting_button_text_false: {
+        color: "#b8b8b8",
+        fontWeight: "bold",
+        fontSize: "45%"
+    },
+    progress_bar: {
+        height: "50%",
+        width: "95%",
+        // borderWidth: 1,
+        borderColor: "grey",
+        borderRadius: 3
+    },
+    time_text_container: {
+        alignItems: "center"
+    },
+    place_bet_button_active: {
+        // borderWidth: 1,
+        width: "90%",
+        height: "5%",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#0053BC",
+        borderRadius: 7,
+        marginBottom: 8
+    },
+    place_bet_text: {
+        color: "white",
+        fontWeight: "bold",
+        fontSize: 20
+    },
+    skip_bet_button_active: {
+        // borderWidth: 1,
+        width: "90%",
+        height: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#002b5c",
+        borderRadius: 7,
+        // marginTop: 5
+    },
+    place_bet_button_inactive: {
+        // borderWidth: 1,
+        width: "90%",
+        height: "5%",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#002b5c",
+        borderRadius: 7,
+        marginBottom: 8
+    },
+    skip_bet_button_inactive: {
+        // borderWidth: 1,
+        width: "90%",
+        height: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#0053BC",
+        borderRadius: 7,
+        // marginTop: 5
+    },
+    
    
   
   });

@@ -15,7 +15,7 @@ const betting = () => router.push("betting")
   return (
     <View style={styles.container}>
       <Text onPress={homepage}>click me</Text>
-      <Text onPress={betting}>click me - betting</Text>
+      {/* <Text onPress={betting}>click me - betting</Text> */}
     </View>
   );
 }
