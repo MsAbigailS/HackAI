@@ -6,6 +6,7 @@ import { ProgressBar } from 'react-native-paper';
 import { CountDownText } from 'react-native-countdown-timer-text';
 import { Component } from 'react';
 import CountDown from 'react-native-countdown-component';
+import { API_URL } from './secrets'
 // import ProgressBar from 'react-progress-bar-timer';
 import mavericksTeamImage from '../../images/dallas_mavericks_team_logo.png';
 import miamiHeatImage from '../../images/miami_heat_team_logo.png';
@@ -21,18 +22,75 @@ export default function Betting() {
     // const bet_placed = () => router.push("betPlaced/bet_placed")
     const bet_skipped = () => router.push("betSkipped/bet_skipped")
 
-    bet_placed = () => {
+    bet_placed = async () => {
         if(active !== false || active2 !== false){
             if(betValue > 0){
+                console.log('bet placed3!');
+                // TODO: place the bet
+                placeBetAPICall(betValue);
+                await new Promise(r => setTimeout(r, 1000));
                 router.push("betPlaced/bet_placed")
             } else {
-                Alert.alert('Bets must be greater than 0 points', 'Please enter a number greater than 0 for your bid')
+                Alert.alert('Bets must be greater than 0 points and less than your current available points.', 'Please enter a valid betting amount and try again!')
             }
         } else {
             Alert.alert('You haven\'t placed a bet!', 'Select \'Yes\' or \'No\'')
         }
     }
+
+    async function placeBetAPICall(points) {
+        // POST /setBetChoice Form Body: choice=choice (yes or no) player=player amount=amount (numeric please) 
+        const formData = new FormData();
+        formData.append('choice', active ? 'yes' : 'no');
+        formData.append('player', 'DemoPlayer');
+        formData.append('amount', points);
+        fetch(API_URL + '/setBetChoice', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            // setUserPoints(parseInt(data));
+        }
+        ).catch((error) => {
+            console.error('Error:', error);
+        }
+        );
+    }
     
+    useEffect(() => {
+
+        // POST /getCurrentPoints Form Body player=player Will return amount of coins for player
+        const formData = new FormData();
+        formData.append('player', 'DemoPlayer');
+        fetch(API_URL + '/getCurrentPoints', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            setUserPoints(parseInt(data));
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+
+        // check if there is an ongoing bet every second
+        const interval = setInterval(() => {
+            // GET /getCurrentBet No Body Will return either
+            const response = fetch(API_URL + '/getCurrentBet')
+            .then(response => response.json())
+            .then(data => {
+                setBettingPrompt(data['bet']);
+            }).catch((error) => {
+                setBettingPrompt('There is no active bet currently!');
+            });
+        }, 1000);
+        
+        return () => {
+            clearInterval(interval);
+        };
+
+    }, []);
 
     const teamNames = [ "Dallas Mavericks",
                         "Miami Heat"]
@@ -46,7 +104,7 @@ export default function Betting() {
     // const userPoints = 500
     const [userPoints, setUserPoints] = useState(500)
 
-    const bettingPrompt = "Will Dwight Powell make the shot xoxo?"
+    const [bettingPrompt, setBettingPrompt] = useState("Will Dwight Powell make the shot xoxo?")
 
 
     const [betValue, setBetValue] = useState(0)
@@ -78,9 +136,10 @@ export default function Betting() {
         setActive(false)
     }
 
-    const placeBet = () => {
-        setPlaceBetStatus(!placeBetStatus)
-    }
+
+    // const placeBet = async () => {
+    //     setPlaceBetStatus(!placeBetStatus)
+    // }
 
     const skipBet = () => {
         setSkipBetStatus(!skipBetStatus)
@@ -96,7 +155,7 @@ export default function Betting() {
             </View>
 
             <View style = {styles.timer_container}>
-                <ProgressBarExample duration={30000} tickRate={60} />
+                { bettingPrompt !== 'There is no active bet currently!' ? <ProgressBarExample duration={30000} tickRate={60} /> : null }
             </View>
 
             <View style={styles.prompt_container}>
@@ -210,10 +269,11 @@ const styles = StyleSheet.create({
     prompt: {
         // borderWidth: 2,
         borderColor: "blue",
-        fontSize: "30%",
+        fontSize: "18%",
         // borderWidth: 2,
         width: "100%",
-        alignItems: "center"
+        alignItems: "center",
+        textAlign: "center"
     },
     timer_container: {
         width: "90%",

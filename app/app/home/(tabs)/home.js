@@ -1,9 +1,11 @@
 import { useRouter } from 'expo-router';
+import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Image, Pressable } from 'react-native';
 import mavericksTeamImage from '../../images/dallas_mavericks_team_logo.png';
 import miamiHeatImage from '../../images/miami_heat_team_logo.png';
 import profile_picture from '../../images/profile_picture.png'
 import heroImage from '../../images/basketball_hero_image.jpg'
+import { API_URL } from './secrets';
 
 export default function Home() {
 
@@ -19,8 +21,23 @@ export default function Home() {
     const matchTimes = ["5:00 PM",
                         "6:30 PM"]
 
-    userPoints = 500
-    userName = "John Doe"
+    const [userPoints, setUserPoints] = useState(500);
+    const [userName, setUserName] = useState("John Doe");
+
+    useEffect(() => {
+        const formData = new FormData();
+        formData.append('player', 'DemoPlayer');
+        fetch(API_URL + '/getCurrentPoints', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            setUserPoints(parseInt(data));
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    });
 
     return (
         <View style={styles.homepageContainer}>
