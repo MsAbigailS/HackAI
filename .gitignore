@@ -12,3 +12,4 @@ backend/finalData.csv
 backend/data.csv
 node_modules
 secrets.js
+backend/model/*
