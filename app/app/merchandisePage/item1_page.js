@@ -17,6 +17,29 @@ export default function waitingPage() {
     const redeemed = () => router.push("merchandisePage/successful_redeem")
     const cart = () => router.push("merchandisePage/put_in_cart")
 
+    async function purchase() {
+
+        // Buying An Item POST /buyItem has a form: player = player itemAmount = itemAmount
+        const formData = new FormData();
+        formData.append('player', 'DemoPlayer');
+        formData.append('itemAmount', '20');
+        const response = await fetch('http://localhost:3000/buyItem', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: formData
+        }).then(response => response.text())
+        .then(data => { console.log(data); })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+
+
+
+        redeemed();
+    }
+
     return (
         <View style={styles.container}>
             <View style={{alignSelf: "left"}}>
@@ -48,7 +71,7 @@ export default function waitingPage() {
                 <Pressable onPress = {cart} style={styles.button}>
                     <Text>ADD TO CART</Text>
                 </Pressable>
-                <Pressable onPress = {redeemed} style={styles.button}>
+                <Pressable onPress = {purchase} style={styles.button}>
                     <Text>REDEEM NOW</Text>
                 </Pressable>
             </View>
