@@ -22,7 +22,7 @@ export default function waitingPage() {
         // Buying An Item POST /buyItem has a form: player = player itemAmount = itemAmount
         const formData = new FormData();
         formData.append('player', 'DemoPlayer');
-        formData.append('itemAmount', '20');
+        formData.append('itemAmount', 20);
         const response = await fetch('http://localhost:3000/buyItem', {
             method: 'POST',
             headers: {
