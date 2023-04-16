@@ -4,7 +4,7 @@ import React, { useState, useEffect, Component } from 'react';
 import { SafeAreaView, ScrollView, StatusBar } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import { CountDownText } from 'react-native-countdown-timer-text';
-import { Component } from 'react';
+// import { Component } from 'react';
 import CountDown from 'react-native-countdown-component';
 import { API_URL } from './secrets'
 // import ProgressBar from 'react-progress-bar-timer';
@@ -14,7 +14,7 @@ import bettingImage from '../../images/betting_image.svg';
 import betting_top_image_1 from '../../images/mavs_betting_image_1.jpg';
 import betting_top_image_2 from '../../images/mavs_betting_image_2.jpg';
 import betting_top_image_3 from '../../images/mavs_betting_image_3.jpg';
-import { Animated } from 'react-native'
+// import { Animated } from 'react-native'
 import { Alert} from 'react-native';
 import { Animated } from 'react-native'
 // import { Carousel } from 'react-native-auto-carousel'

@@ -45,7 +45,10 @@ export default function Leaderboard () {
     else {
         return (
             <View style={styles.container}>
-                <Image source = {heroImage}/>
+                <Image source = {heroImage} style={styles.heroImage}/>
+                <View style = {styles.header_contain}>
+                    <Text style = {styles.header}>Leaderboard</Text>
+                </View>
             <FlatList
                 data={leaderboard}
                 keyExtractor={(item) => item.name}
@@ -67,6 +70,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 20,
   },
+  header:{
+    fontSize: "50%",
+    fontWeight: "bold",
+    // borderWidth:2,
+  },
+  header_contain: {
+    alignItems: "center",
+    paddingBottom: 12,
+    borderBottomWidth: 2
+  },
   itemContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -84,8 +97,9 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   heroImage: {
-    height: 50,
-    width: 50
+    height: "50%",
+    width: "85%",
+    marginLeft: 30
   }
 });
 
