@@ -18,6 +18,36 @@ import { Alert} from 'react-native';
 export default function Betting() {
 
     const router = useRouter();
+    // const bet_placed = () => router.push("betPlaced/bet_placed")
+
+    bet_placed = () => {
+        if(active !== false || active2 !== false){
+            if(betValue > 0){
+                router.push("betPlaced/bet_placed")
+            } else {
+                Alert.alert('Bets must be greater than 0 points', 'Please enter a number greater than 0 for your bid')
+            }
+        } else {
+            Alert.alert('You haven\'t placed a bet!', 'Select \'Yes\' or \'No\'')
+        }
+    }
+
+    onLoad = async () => {
+        await wait(1000);
+        setStatus(status - 0.1)
+        
+        // alert("AHHHH")
+        // waitingPage();
+    }
+
+    useEffect(() => {
+        onLoad();
+    }, [])
+
+    async function wait(milleseconds) {
+        await new Promise(resolve => setTimeout(resolve, milleseconds));
+    }
+    
 
     const teamNames = [ "Dallas Mavericks",
                         "Miami Heat"]
@@ -28,7 +58,8 @@ export default function Betting() {
     const matchTimes = ["5:00 PM",
                         "6:30 PM"]
 
-    const userPoints = 500
+    // const userPoints = 500
+    const [userPoints, setUserPoints] = useState(500)
 
     const bettingPrompt = "Will Dwight Powell make the shot xoxo?"
 
@@ -44,6 +75,7 @@ export default function Betting() {
             Alert.alert('Oops!', 'Betting amount is larger than available points! Please use a smaller betting amount and try again.');
         }
     }
+    
 
     const maxTime_seconds = 120
     var remaining_time_seconds = 45
@@ -132,7 +164,7 @@ export default function Betting() {
             </View>
 
             <Pressable
-                    onPress = {placeBet}
+                    onPress = {bet_placed}
                     style = {placeBetStatus ? styles.place_bet_button_inactive : styles.place_bet_button_active}>
                     <Text style={styles.place_bet_text}>Place Bet</Text>
             </Pressable>
