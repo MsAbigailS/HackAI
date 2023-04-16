@@ -1,0 +1,6 @@
+You will be given a transcription from a basketball game announcer at the beginning of a quarter. Come up with five different yes or no questions that will expire by the beginning of the next quarter, similar to these:
+Will ____ team will win tonight's game?
+Will ____ player earn a triple double playing tonight?
+
+The only response should be in the following form:
+["Question 1", "Question 2", "Question 3", "Question 4", "Question 5"]
