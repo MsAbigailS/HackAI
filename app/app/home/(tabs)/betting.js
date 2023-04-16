@@ -15,6 +15,9 @@ import betting_top_image_1 from '../../images/mavs_betting_image_1.jpg';
 import betting_top_image_2 from '../../images/mavs_betting_image_2.jpg';
 import betting_top_image_3 from '../../images/mavs_betting_image_3.jpg';
 import { Alert} from 'react-native';
+import { Animated } from 'react-native'
+// import { Carousel } from 'react-native-auto-carousel'
+// import { Dimensions } from 'react-native
 
 export default function Betting() {
 
@@ -91,6 +94,44 @@ export default function Betting() {
 
     }, []);
 
+    class ImageLoader extends Component{
+        state = {
+          opacity: new Animated.Value(0),
+        }
+    
+        onLoad = () => {
+          Animated.timing(this.state.opacity, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true,
+          }).start();
+        }
+    
+        render() {
+          return(
+            <Animated.Image
+              onLoad={this.onLoad}
+              {...this.props}
+              style={[
+                {
+                  opacity: this.state.opacity,
+                  transform: [
+                    {
+                      scale: this.state.opacity.interpolate({
+                        inputRange: [0,1],
+                        outputRange: [0.85, 1],
+                      })
+                    }
+                  ]
+                },
+                this.props.style,
+              ]
+              }
+            />
+          )
+        }
+      }
+
     const teamNames = [ "Dallas Mavericks",
                         "Miami Heat"]
 
@@ -145,12 +186,12 @@ export default function Betting() {
         bet_skipped()
     }
 
-
     return (
         <View style={styles.container}>
             {/* Hero Image */}
+            {/* <Carousel/> */}
             <View>
-                <Image source = {betting_top_image_2} style={styles.hero_image}/>
+                <ImageLoader source = {betting_top_image_2} style={styles.hero_image}/>
             </View>
 
             <View style = {styles.timer_container}>

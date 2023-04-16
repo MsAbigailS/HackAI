@@ -1,25 +1,72 @@
 import { useRouter } from 'expo-router';
-import React, { useState, useEffect } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Image, Pressable } from 'react-native';
 import mavericksTeamImage from '../../images/dallas_mavericks_team_logo.png';
 import miamiHeatImage from '../../images/miami_heat_team_logo.png';
 import profile_picture from '../../images/profile_picture.png'
 import heroImage from '../../images/basketball_hero_image.jpg'
+import bearImage from '../../images/memphis_grizzlies_team_logo.png'
 import { API_URL } from './secrets';
+import { Animated } from 'react-native'
 
 export default function Home() {
 
     const router = useRouter();
     const addTeam = () => router.push("addTeam/add_team")
+    const merch = () => router.push("merchandise")
 
     const teamNames = [ "Dallas Mavericks",
-                        "Miami Heat"]
+                        "Miami Heat",
+                        "Memphis Grizzlies"
+                    ]
 
     const matchDates = ["7 Apr 2023",
-                        "2 Apr 2023"]
+                        "2 Apr 2023",
+                        "16 Apr"    
+                    ]
 
     const matchTimes = ["5:00 PM",
-                        "6:30 PM"]
+                        "6:30 PM",
+                        "2:00 PM"
+                    ]
+
+                    class ImageLoader extends Component{
+                        state = {
+                          opacity: new Animated.Value(0),
+                        }
+                    
+                        onLoad = () => {
+                          Animated.timing(this.state.opacity, {
+                            toValue: 1,
+                            duration: 1000,
+                            useNativeDriver: true,
+                          }).start();
+                        }
+                    
+                        render() {
+                          return(
+                            <Animated.Image
+                              onLoad={this.onLoad}
+                              {...this.props}
+                              style={[
+                                {
+                                  opacity: this.state.opacity,
+                                  transform: [
+                                    {
+                                      scale: this.state.opacity.interpolate({
+                                        inputRange: [0,1],
+                                        outputRange: [0.85, 1],
+                                      })
+                                    }
+                                  ]
+                                },
+                                this.props.style,
+                              ]
+                              }
+                            />
+                          )
+                        }
+                      }
 
     const [userPoints, setUserPoints] = useState(0);
     const [userName, setUserName] = useState("John Doe");
@@ -42,8 +89,8 @@ export default function Home() {
     return (
         <View style={styles.homepageContainer}>
             <View style={styles.overlay_images}>
-                <Image source = {heroImage} style={styles.hero_image}/>
-                <Image source = {profile_picture} style={styles.profile_picture}/>
+                <ImageLoader source = {heroImage} style={styles.hero_image}/>
+                <ImageLoader source = {profile_picture} style={styles.profile_picture}/>
             </View>
 
             <View style={styles.hello_prompt}>
@@ -71,8 +118,9 @@ export default function Home() {
                         <Text style={styles.team_name}>{teamNames[0]}</Text>
                         <Text style={styles.score_text_container}>117-138 vs. Spurs Apr 9</Text>
                     </View>
-                    <Pressable style={styles.button}>
-                        <Text>Redeem Points</Text>
+                    <Pressable onPress = {merch} style={styles.button}>
+                        <Text style={styles.buttonText}>Redeem</Text>
+                        <Text style={styles.buttonText}> Points</Text>
                     </Pressable>
                 </View>
             </View>
@@ -83,14 +131,33 @@ export default function Home() {
                     <Image source = {miamiHeatImage} style={styles.team_logo}></Image>
                     <View style={styles.score_container}>
                         <Text style={styles.team_name}>{teamNames[1]}</Text>
-                        <Text style={styles.score_text_container}>vs. Bucks Apr 16, 4:30 PM CDT</Text>
+                        <Text style={styles.score_text_container}>vs. Bucks Apr 14, 4:30 PM CDT</Text>
                     </View>
                     <View style={styles.two_button_container}>
-                        <Pressable style={styles.button3}>
-                            <Text>Redeem Points</Text>
+                        <Pressable onPress={merch} style={styles.button3}>
+                            <Text style={styles.buttonText}>Redeem</Text>
+                            <Text style={styles.buttonText}> Points</Text>
                         </Pressable>
                         <Pressable style={styles.button2}>
-                            <Text>Purchase Tickets</Text>
+                            <Text style={styles.buttonText2}>Purchase Tickets</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </View>
+            <View style={styles.team_container}>
+                <View style={styles.team_container_top}>
+                    <Image source = {bearImage} style={styles.team_logo}></Image>
+                    <View style={styles.score_container}>
+                        <Text style={styles.team_name}>{teamNames[2]}</Text>
+                        <Text style={styles.score_text_container}>vs. Los Angeles Lakers {matchDates[2]}, {matchTimes[2]} CDT</Text>
+                    </View>
+                    <View style={styles.two_button_container}>
+                        <Pressable onPress={merch} style={styles.button3}>
+                            <Text style={styles.buttonText}>Redeem</Text>
+                            <Text style={styles.buttonText}> Points</Text>
+                        </Pressable>
+                        <Pressable style={styles.button2}>
+                            <Text style={styles.buttonText2}>Purchase Tickets</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -109,7 +176,7 @@ export default function Home() {
 const styles = StyleSheet.create({
     homepageContainer: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: '#fffff',
       alignItems: 'center',
     //   justifyContent: 'center',
     },
@@ -138,7 +205,16 @@ const styles = StyleSheet.create({
         width: "100%",
         paddingLeft: 5,
         marginTop: 50,
-        borderWidth: 2
+        // borderTopWidth: 2
+    },
+    buttonText2:{
+        color: "#407BFF",
+        fontWeight: "bold"
+    },
+    buttonText:{
+        color: "white",
+        fontWeight: "bold",
+        fontSize: 18
     },
     header3: {
         fontSize: "25%",
@@ -220,7 +296,7 @@ const styles = StyleSheet.create({
     profile_picture: {
         position: "absolute",
         borderRadius: 100,
-        borderWidth: 1,
+        borderWidth: 3,
         height: 175,
         width: 175,
         top: 50,
@@ -252,12 +328,13 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         width: "28%",
-        marginLeft: 5,
-        marginRight: 5,
+        marginLeft: 0,
+        marginRight: 6,
         borderRadius: 3,
-        height: "65%",
+        height: "98%",
         // backgroundColor: "#0053bc",
-        // color: "white"
+        // color: "white",
+        backgroundColor: "#407BFF"
     },
     button2: {
         // borderWidth: 1,
@@ -268,7 +345,9 @@ const styles = StyleSheet.create({
         marginRight: 5,
         borderRadius: 3,
         height: "30%",
-        marginTop: 10
+        marginTop: 6,
+        // color: "blue"
+        
     },
     button3: {
         borderWidth: 1,
@@ -278,8 +357,9 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginRight: 5,
         borderRadius: 3,
-        height: "53%",
-        marginTop: 5
+        height: "65%",
+        marginTop: 2,
+        backgroundColor: "#407BFF",
     },
     add_button: {
         width: "25%",

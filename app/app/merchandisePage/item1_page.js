@@ -1,56 +1,47 @@
 import { useRouter } from 'expo-router';
 import { Text, View, StyleSheet, Image, Pressable, TextInput } from 'react-native';
-import React, { Component, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView, ScrollView, StatusBar } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
-import { CountDownText } from 'react-native-countdown-timer-text';
+// import { CountDownText } from 'react-native-countdown-timer-text';
 import { Alert} from 'react-native';
 import waiting_page_hero_image from '../images/confirmation_page_image.jpeg'
-import { API_URL } from '../home/(tabs)/secrets';
+import prodImage from "../images/mavHat.jpg"
 
 export default function waitingPage() {
 
     const router = useRouter();
 
     const homepage = () => router.push("home")
+    const redeemed = () => router.push("merchandisePage/successful_redeem")
 
-    const [bettingPrompt, setBettingPrompt] = useState(false);
-
-    useEffect(() => {
-        fetch(`${API_URL}/getCurrentBet`, {
-            method: 'GET',
-        }).then((response) => response.json())
-        .then((json) => {
-            setBettingPrompt(json.bet);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-    });
-    
     return (
         <View style={styles.container}>
+            <Pressable style = {styles.backButtonContainer} onPress = {redeemed}>
+                <Text style={styles.backButton}>Back</Text>
+            </Pressable>
+            <Text>Dallas Mavericks New Era 2022 Fairway Golf Tee Green Snapback</Text>
+            <Image style = {styles.productImage} source = {prodImage}/>
+            <Text style={styles.pointText}>35 Points Required</Text>
             <View>
-                <Image source = {waiting_page_hero_image} style={styles.hero_image}/>
+                <Text style={styles.buttonTopic}>Size</Text>
+                <Pressable style={styles.button2}>
+                    <Text>OSFA</Text>
+                </Pressable>
+                <Text style={styles.buttonTopic}>Color</Text>
+                <Pressable style={styles.button2}>
+                    <Text>GREEN</Text>
+                </Pressable>
             </View>
-            <View style = {styles.title_container}>
-                <Text style = {styles.title_text}>Congratulations!</Text>
-                <Text style = {styles.subHeader}>You've successfully placed your bet.</Text>
+
+            <View>
+                <Pressable onPress = {redeemed} style={styles.button}>
+                    <Text>ADD TO CART</Text>
+                </Pressable>
+                <Pressable onPress = {redeemed} style={styles.button}>
+                    <Text>REDEEM NOW</Text>
+                </Pressable>
             </View>
-            
-            <View style = {styles.result_wait_container}>
-                <Text style = {styles.sub_title_text}>The results for:</Text>
-                <Text style = {styles.bet_prompt}>{bettingPrompt}</Text>
-                <Text style = {styles.sub_title_text2}>Will be released shortly!</Text>
-            </View>
-            
-            <Pressable onPress = {homepage} style = {styles.btn_active}>
-                <Text style = {styles.btn_text}>Home</Text>
-            </Pressable>
-            <Text>or</Text>
-            <Pressable style = {styles.btn_active}>
-                <Text style = {styles.btn_text}>Redeem Points</Text>
-            </Pressable>
         </View>
     )
 
@@ -63,6 +54,46 @@ const styles = StyleSheet.create({
       alignItems: 'center',
     //   justifyContent: 'center',
       alignContent: "center",
+    },
+    backButtonContainer: {
+        width: "100%",
+        paddingTop: 40
+    },
+    backButton:{
+        color: "black",
+        fontSize: 20,
+        borderWidth: 2
+    },
+    pointText: {
+        fontSize: 25
+    },
+    buttonTopic: {
+        fontSize: 20
+    },
+    button:{
+        borderWidth:1,
+        borderColor: "blue",
+        width: 250,
+        marginTop: 20,
+        height: 40,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    button2:{
+        borderWidth:1,
+        borderColor: "blue",
+        width: 50,
+        marginTop: 5,
+        height: 40,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    productImage: {
+        borderWidth: 1,
+        marginTop: 70,
+        height: 250,
+        width: 250,
+        // padding: 50
     },
     btn_text: {
         color: "white",
@@ -115,7 +146,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderRadius: 5,
         borderColor: "rgba(2, 0, 15, 0.10)",
-        fontSize: "18%",
+        fontSize: "30%",
         padding: 10
     },
     prompt: {
@@ -269,7 +300,4 @@ const styles = StyleSheet.create({
         borderRadius: 7,
         // marginTop: 5
     },
-    
-   
-  
   });

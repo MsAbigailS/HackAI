@@ -1,56 +1,40 @@
 import { useRouter } from 'expo-router';
 import { Text, View, StyleSheet, Image, Pressable, TextInput } from 'react-native';
-import React, { Component, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView, ScrollView, StatusBar } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import { CountDownText } from 'react-native-countdown-timer-text';
 import { Alert} from 'react-native';
 import waiting_page_hero_image from '../images/confirmation_page_image.jpeg'
-import { API_URL } from '../home/(tabs)/secrets';
+import animated_shopping_cart from '../images/animat-shopping-cart-color.gif'
 
-export default function waitingPage() {
+export default function successfulRedeem() {
 
     const router = useRouter();
 
     const homepage = () => router.push("home")
 
-    const [bettingPrompt, setBettingPrompt] = useState(false);
+    onLoad = async () => {
+        await wait(2000);
+        // alert("AHHHH")
+        homepage();
+    }
 
     useEffect(() => {
-        fetch(`${API_URL}/getCurrentBet`, {
-            method: 'GET',
-        }).then((response) => response.json())
-        .then((json) => {
-            setBettingPrompt(json.bet);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-    });
+        onLoad();
+    }, [])
+    
+    async function wait(milleseconds) {
+        await new Promise(resolve => setTimeout(resolve, milleseconds));
+    }
     
     return (
         <View style={styles.container}>
-            <View>
-                <Image source = {waiting_page_hero_image} style={styles.hero_image}/>
-            </View>
             <View style = {styles.title_container}>
                 <Text style = {styles.title_text}>Congratulations!</Text>
-                <Text style = {styles.subHeader}>You've successfully placed your bet.</Text>
+                <Text style = {styles.subHeader}>You've successfully placed your order.</Text>
+                <Image source = {animated_shopping_cart} style={styles.animatedIcon}/>
             </View>
-            
-            <View style = {styles.result_wait_container}>
-                <Text style = {styles.sub_title_text}>The results for:</Text>
-                <Text style = {styles.bet_prompt}>{bettingPrompt}</Text>
-                <Text style = {styles.sub_title_text2}>Will be released shortly!</Text>
-            </View>
-            
-            <Pressable onPress = {homepage} style = {styles.btn_active}>
-                <Text style = {styles.btn_text}>Home</Text>
-            </Pressable>
-            <Text>or</Text>
-            <Pressable style = {styles.btn_active}>
-                <Text style = {styles.btn_text}>Redeem Points</Text>
-            </Pressable>
         </View>
     )
 
@@ -69,10 +53,17 @@ const styles = StyleSheet.create({
         fontSize: "22%",
         fontWeight: "bold"
     },
+    animatedIcon:{
+        // borderWidth: 2,
+        // marginTop: 600
+    },
     title_container: {
-        borderBottomWidth: 1,
-        marginBottom: 12,
-        height: "9%",
+        // borderBottomWidth: 1,
+        // marginBottom: 12,
+        marginTop: 200,
+        // borderWidth: 2,
+        // height: "9%",
+        // borderColor: "orange",
         width: "100%",
         alignItems: "center",
         justifyContent: "center",
@@ -87,10 +78,12 @@ const styles = StyleSheet.create({
     },
     title_text: {
         fontSize: "40%",
-        fontWeight: "bold"
+        fontWeight: "bold",
+        // borderWidth: 2
     },
     subHeader: {
-        fontSize: "20%"
+        fontSize: "20%",
+        // borderWidth:2
     },
     result_wait_container: {
         // borderWidth: 3,
@@ -115,7 +108,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderRadius: 5,
         borderColor: "rgba(2, 0, 15, 0.10)",
-        fontSize: "18%",
+        fontSize: "30%",
         padding: 10
     },
     prompt: {
