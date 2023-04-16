@@ -7,7 +7,7 @@ import profile_picture from '../../images/profile_picture.png'
 import heroImage from '../../images/basketball_hero_image.jpg'
 import { API_URL } from './secrets';
 
-export default function QuestionAnswer() {
+export default function QNA() {
   const [question, setQuestion] = useState('Here is an example question!');
   const [answer, setAnswer] = useState('This is where the answer will be!');
   const [loading, setLoading] = useState(false);
