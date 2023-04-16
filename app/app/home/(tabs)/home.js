@@ -88,7 +88,7 @@ export default function Home() {
 
         // check if there is an ongoing bet every second
         const interval = setInterval(() => {
-            
+
             const formData = new FormData();
             formData.append('player', 'DemoPlayer');
             fetch(API_URL + '/getCurrentPoints', {
@@ -101,7 +101,7 @@ export default function Home() {
             }).catch((error) => {
                 console.error('Error:', error);
             });
-            }, 1000);
+            }, 3000);
         
         return () => {
             clearInterval(interval);

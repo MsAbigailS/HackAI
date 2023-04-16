@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { Text, View, StyleSheet, Image, Pressable, TextInput, FlatList } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { API_URL } from './secrets';
+import heroImage from '../../images/trophy_gif.gif'
 
 export default function Leaderboard () {
 
@@ -44,6 +45,7 @@ export default function Leaderboard () {
     else {
         return (
             <View style={styles.container}>
+                <Image source = {heroImage}/>
             <FlatList
                 data={leaderboard}
                 keyExtractor={(item) => item.name}
@@ -81,5 +83,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#555',
   },
+  heroImage: {
+    height: 50,
+    width: 50
+  }
 });
 

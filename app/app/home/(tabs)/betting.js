@@ -103,7 +103,7 @@ export default function Betting() {
             }).catch((error) => {
                 console.error('Error:', error);
             });
-            }, 1000);
+            }, 2000);
         
         return () => {
             clearInterval(interval);
