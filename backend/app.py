@@ -84,6 +84,7 @@ updateLeaderboard()
 completeData = pd.read_csv('./data.csv')
 
 
+
 @app.route('/getCurrentPoints', methods=['POST'])
 def getCurrentPoints():
     player = request.form['player']
