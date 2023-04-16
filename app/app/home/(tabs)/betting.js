@@ -216,13 +216,12 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     timer_container: {
-        borderWidth: 1,
         width: "90%",
-        height: 90,
+        height: 20,
         // alignItems: "center", // DO NOT USE IT GO CRAZY
         justifyContent: "center",
         paddingLeft: 12,
-        paddingTop: 20
+        paddingTop: 5
     },
     not_placing_bet_container: {
         // borderWidth: 1,
