@@ -9,6 +9,7 @@ import time
 import boto3
 from sklearn import preprocessing
 import pandas as pd
+from tensorflow import keras
 load_dotenv()
 
 random.seed(time.time())
@@ -81,9 +82,34 @@ def updateLeaderboard():
 
 updateLeaderboard()
 
-completeData = pd.read_csv('./data.csv')
+completeData = pd.read_csv('./finalData.csv')
+del completeData[completeData.columns[0]]
+scaler = preprocessing.StandardScaler().fit(completeData)
 
+test = pd.read_csv('./test.csv')
+del test[test.columns[0]]
+X_scaled = scaler.transform(test)
 
+model = keras.models.load_model('./model')
+
+predictions = model.predict(X_scaled)
+for prediction in predictions:
+    print(predictions)
+
+startTime = time.time()
+
+@app.route('/startGame', methods=['GET'])
+def startGame():
+    global startTime
+    startTime = time.time()
+
+@app.route('/getGameProbabilities', methods=['GET'])
+def getGameProbabilities():
+    global startTime
+    global predictions
+    currentTime = time.time()
+    difference = currentTime - startTime
+    return predictions[((difference * 2) % 2820)]
 
 @app.route('/getCurrentPoints', methods=['POST'])
 def getCurrentPoints():
